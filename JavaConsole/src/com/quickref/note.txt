@@ -196,3 +196,618 @@ Java Collections Framework
 	Đây là một số cấu trúc dữ liệu phổ biến trong JCF. Ngoài ra, JCF còn có nhiều cấu trúc dữ liệu khác như Vector, Stack, Hashtable, Properties, etc. Tuy nhiên, các cấu trúc này không được sử dụng phổ biến trong ứng dụng hiện đại do có các cấu trúc tương tự nhưng tốc độ xử lý chậm hơn.
 
 ======================================
+Để phát triển một Web API trong Java một cách hiệu quả và chuẩn mực, có một số best practice như sau:
+
+	1.	Sử dụng mô hình thiết kế RESTful để đảm bảo tính tương thích và dễ dàng sử dụng.
+		Để thiết kế RESTful hiệu quả trong Java, chúng ta có thể tuân theo các quy tắc sau:
+
+		1.1	Sử dụng các phương thức HTTP đúng cách. GET để lấy thông tin, POST để tạo mới, PUT để cập nhật và DELETE để xóa.
+		1.2	Sử dụng các URL chuẩn và đúng định dạng. URL nên chỉ ra tài nguyên mà API đang thao tác và phải được thể hiện bằng các danh từ.		
+		1.3	Sử dụng các trạng thái HTTP (status code) đúng cách. Các status code nên được sử dụng để thể hiện kết quả của API và cung cấp thông tin lỗi chi tiết khi cần thiết.
+		1.4	Sử dụng định dạng JSON hoặc XML để truyền dữ liệu giữa client và server.
+		1.5	Sử dụng các truy vấn thích hợp để lọc và phân trang dữ liệu.
+
+		Ví dụ:
+		@RestController
+		@RequestMapping("/api/employees")
+		public class EmployeeController {
+			
+			@Autowired
+			private EmployeeService employeeService;
+
+			@GetMapping("/")
+			public List<Employee> getAllEmployees() {
+				return employeeService.getAllEmployees();
+			}
+
+			@GetMapping("/{id}")
+			public ResponseEntity<Employee> getEmployeeById(@PathVariable Long id) {
+				Employee employee = employeeService.getEmployeeById(id);
+				if (employee == null) {
+					return ResponseEntity.notFound().build();
+				}
+				return ResponseEntity.ok(employee);
+			}
+
+			@PostMapping("/")
+			public ResponseEntity<Employee> createEmployee(@RequestBody Employee employee) {
+				Employee savedEmployee = employeeService.createEmployee(employee);
+				return ResponseEntity.ok(savedEmployee);
+			}
+
+			@PutMapping("/{id}")
+			public ResponseEntity<Employee> updateEmployee(@PathVariable Long id, @RequestBody Employee employee) {
+				Employee updatedEmployee = employeeService.updateEmployee(id, employee);
+				if (updatedEmployee == null) {
+					return ResponseEntity.notFound().build();
+				}
+				return ResponseEntity.ok(updatedEmployee);
+			}
+
+			@DeleteMapping("/{id}")
+			public ResponseEntity<Void> deleteEmployee(@PathVariable Long id) {
+				employeeService.deleteEmployee(id);
+				return ResponseEntity.noContent().build();
+			}
+		}
+
+	2.	Sử dụng Spring Framework để phát triển và quản lý Web API.
+		Để sử dụng Spring Framework để phát triển và quản lý Web API, chúng ta có thể tuân theo các bước sau:
+		
+		2.1	Cài đặt Spring Framework: Bước đầu tiên là cài đặt Spring Framework. Spring có thể được cài đặt thông qua Maven hoặc Gradle hoặc tải xuống trực tiếp từ trang chủ của Spring.
+		
+		2.2	Tạo một ứng dụng Spring Boot: Bạn có thể sử dụng Spring Initializr để tạo một ứng dụng Spring Boot nhanh chóng. Điền các thông tin yêu cầu như group, artifact và dependencies cần thiết. Spring Initializr sẽ tạo một project mẫu và một file pom.xml hoặc build.gradle có chứa tất cả các dependencies cần thiết.
+		
+		2.3	Xác định các endpoint: Sau khi có ứng dụng Spring Boot, bạn có thể xác định các endpoint cần thiết cho ứng dụng của mình. Sử dụng các annotation như @RestController, @RequestMapping, @GetMapping, @PostMapping, @PutMapping và @DeleteMapping để xác định các endpoint của API.
+			Ví dụ:
+			@RestController
+			@RequestMapping("/api")
+			public class HelloController {
+			
+				@GetMapping("/hello")
+				public String hello() {
+					return "Hello, world!";
+				}
+			
+			}
+
+		2.4	Tạo các service: Chúng ta sử dụng các service để thao tác với dữ liệu và xử lý logic của ứng dụng. Sử dụng các tính năng Dependency Injection của Spring Framework để quản lý các phụ thuộc và injection các đối tượng cần thiết vào các service của chúng ta.
+			Ví dụ:
+			@Service
+			public class UserServiceImpl implements UserService {
+			
+				@Autowired
+				private UserRepository userRepository;
+			
+				@Override
+				public User getUserById(Long id) {
+					return userRepository.findById(id).orElse(null);
+				}
+			
+				@Override
+				public List<User> getAllUsers() {
+					return userRepository.findAll();
+				}
+			
+			}
+
+		2.5	Cấu hình cơ sở dữ liệu: Nếu ứng dụng của bạn sử dụng cơ sở dữ liệu, bạn cần cấu hình kết nối tới cơ sở dữ liệu. Spring cung cấp các cách để cấu hình kết nối với các cơ sở dữ liệu khác nhau, bao gồm cả JPA, JDBC và NoSQL.
+			Ví dụ:
+			spring.datasource.url=jdbc:mysql://localhost:3306/mydb
+			spring.datasource.username=root
+			spring.datasource.password=123456
+			spring.datasource.driver-class-name=com.mysql.jdbc.Driver
+
+		2.6	Tạo DTO (Data Transfer Object):
+			DTO được sử dụng để truyền dữ liệu giữa các lớp và giữa client và server. DTO bao gồm các thuộc tính và phương thức getter/setter để truy cập các thuộc tính.
+
+		2.7	Bảo mật ứng dụng: Nếu ứng dụng của bạn yêu cầu tính năng bảo mật, bạn có thể sử dụng Spring Security để xác thực và phân quyền cho các yêu cầu tới API của bạn.
+			Spring Framework cung cấp tính năng bảo mật để xác thực và phân quyền người dùng. Bạn có thể sử dụng các annotation như @EnableWebSecurity, @Configuration, @EnableGlobalMethodSecurity và @Autowired để cấu hình xác thực và phân quyền. Sau đây là một ví dụ:
+			@Configuration
+			@EnableWebSecurity
+			@EnableGlobalMethodSecurity(prePostEnabled = true)
+			public class SecurityConfig extends WebSecurityConfigurerAdapter {
+			
+				@Autowired
+				private UserService userService;
+			
+				@Override
+				protected void configure(AuthenticationManagerBuilder auth) throws Exception {
+					auth.userDetailsService(userService).passwordEncoder(passwordEncoder());
+				}
+			
+				@Override
+				protected void configure(HttpSecurity http) throws Exception {
+					http.authorizeRequests()
+						.antMatchers("/api/public/**").permitAll()
+						.anyRequest().authenticated()
+						.and().httpBasic()
+						.and().csrf().disable();
+				}
+			
+				@Bean
+				public PasswordEncoder passwordEncoder() {
+					return new BCryptPasswordEncoder();
+				}
+			
+			}
+
+		2.8	Triển khai ứng dụng: Cuối cùng, bạn cần triển khai ứng dụng của mình trên môi trường sản xuất. Bạn có thể triển khai ứng dụng Spring Boot trên một máy chủ web hoặc nền tảng đám mây như AWS hoặc Google Cloud.
+
+	3.	Sử dụng các phương thức HTTP đúng cách để thực hiện các hoạt động CRUD (tạo, đọc, cập nhật, xóa).
+	
+	4.	Xử lý lỗi một cách đúng đắn và cung cấp thông tin lỗi chi tiết để giúp người dùng hiểu được vấn đề.
+	
+	5.	Đảm bảo an toàn bằng cách sử dụng HTTPS và kiểm tra đầu vào của người dùng để tránh các tấn công.
+	
+	6.	Sử dụng Swagger để tạo ra tài liệu API để người dùng có thể dễ dàng sử dụng và hiểu được API.
+		Swagger là một công cụ giúp tạo ra tài liệu API theo chuẩn OpenAPI. Nó giúp các nhà phát triển có thể dễ dàng xây dựng, quản lý và kiểm thử API một cách hiệu quả. Trong Java, có thể sử dụng Swagger để tạo tài liệu API cho các ứng dụng Spring Boot.
+
+		Để sử dụng Swagger trong Java, chúng ta cần thực hiện các bước sau:
+
+		6.1	Thêm thư viện springfox-swagger2 và springfox-swagger-ui vào project:
+			<dependency>
+				<groupId>io.springfox</groupId>
+				<artifactId>springfox-swagger2</artifactId>
+				<version>2.9.2</version>
+			</dependency>
+			<dependency>
+				<groupId>io.springfox</groupId>
+				<artifactId>springfox-swagger-ui</artifactId>
+				<version>2.9.2</version>
+			</dependency>
+
+		6.2	Tạo class SwaggerConfig để cấu hình Swagger:
+			@Configuration
+			@EnableSwagger2
+			public class SwaggerConfig {
+				@Bean
+				public Docket api() {                
+					return new Docket(DocumentationType.SWAGGER_2)          
+					.select()                                       
+					.apis(RequestHandlerSelectors.any())              
+					.paths(PathSelectors.any())                          
+					.build();
+				}
+			}
+
+		6.3	Cấu hình các chú thích trong các API của ứng dụng:
+			@RestController
+			@RequestMapping("/users")
+			@Api(value="users", description="Operations pertaining to users in Online Store")
+			public class UserController {
+
+				@ApiOperation(value = "View a list of available users", response = List.class)
+				@GetMapping("")
+				public List<UserDTO> getAllUsers() {
+					// code here
+				}
+
+				@ApiOperation(value = "Create a new user", response = UserDTO.class)
+				@PostMapping("")
+				public UserDTO createUser(@RequestBody UserDTO userDTO) {
+					// code here
+				}
+			}
+
+		6.4	Khởi động ứng dụng và truy cập vào http://localhost:8080/swagger-ui.html để xem tài liệu API được tạo bởi Swagger.
+
+	7.	Sử dụng các thư viện cache như Redis để tối ưu hóa hiệu suất của Web API.
+		Dưới đây là một số thư viện cache phổ biến được sử dụng trong Java:
+
+		7.1	Ehcache: là một thư viện cache mạnh mẽ và linh hoạt được sử dụng để tối ưu hóa hiệu suất ứng dụng Java. Nó cung cấp nhiều tính năng như in-memory caching, disk-based caching, distributed caching và các cơ chế evict khác nhau.
+			Để sử dụng Ehcache trong Spring Boot, bạn có thể làm theo các bước sau:
+
+			-	Bước 1: Thêm Ehcache dependencies vào file pom.xml:
+					<dependency>
+						<groupId>org.springframework.boot</groupId>
+						<artifactId>spring-boot-starter-cache</artifactId>
+					</dependency>
+
+					<dependency>
+						<groupId>org.ehcache</groupId>
+						<artifactId>ehcache</artifactId>
+					</dependency>
+			
+			-	Bước 2: Cấu hình Ehcache trong file application.properties:
+				# Enable caching support
+				spring.cache.type=ehcache
+
+				# Ehcache configuration
+				spring.cache.ehcache.config=classpath:ehcache.xml
+			
+			-	Bước 3: Tạo file cấu hình Ehcache - ehcache.xml:
+				<ehcache xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+					xsi:noNamespaceSchemaLocation="http://www.ehcache.org/ehcache.xsd">
+
+					<cache name="exampleCache"
+						maxEntriesLocalHeap="10000"
+						maxEntriesLocalDisk="1000"
+						eternal="false"
+						timeToIdleSeconds="300"
+						timeToLiveSeconds="600"
+						memoryStoreEvictionPolicy="LFU"
+						diskExpiryThreadIntervalSeconds="120"
+						statistics="true">
+					</cache>
+
+				</ehcache>
+
+			-	Bước 4: Tạo một class Spring Service với annotation @Cacheable để sử dụng cache:
+				@Service
+				public class ExampleService {
+
+					@Cacheable("exampleCache")
+					public String getData() {
+						// Do some expensive computation to get data
+						return "data";
+					}
+
+				}
+
+			-	Bước 5: Sử dụng ExampleService trong Spring Controller để truy cập dữ liệu từ cache:
+				@RestController
+				public class ExampleController {
+
+					@Autowired
+					private ExampleService exampleService;
+
+					@GetMapping("/data")
+					public String getData() {
+						return exampleService.getData();
+					}
+
+				}
+
+			Trong ví dụ trên, khi gọi phương thức getData() trong ExampleService, Spring sẽ kiểm tra xem liệu dữ liệu đã được lưu trong cache "exampleCache" hay chưa. Nếu đã có, nó sẽ được trả về từ cache, ngược lại nếu chưa có, phương thức sẽ thực hiện tính toán để lấy dữ liệu và lưu nó vào cache.
+
+
+		7.2	Caffeine: là một thư viện cache hiệu quả và dễ sử dụng cho các ứng dụng Java. Nó được thiết kế để cải thiện hiệu suất của các ứng dụng có tính năng cache và cung cấp các tính năng như tự động xoá cache, đồng bộ hóa và phân bổ bộ nhớ thông minh.
+			Để sử dụng thư viện cache Caffeine trong Spring Boot, bạn cần thêm dependency cho Caffeine và Spring Boot Cache vào file pom.xml như sau:
+
+			-	Bước 1: Thêm dependency vào file pom.xml
+				<dependency>
+					<groupId>com.github.ben-manes.caffeine</groupId>
+					<artifactId>caffeine</artifactId>
+					<version>3.0.4</version>
+				</dependency>
+
+			-	Bước 2: Khai báo bean CacheManager trong file cấu hình
+				@Configuration
+				public class CacheConfiguration {
+
+					@Bean
+					public CaffeineCacheManager cacheManager() {
+						CaffeineCacheManager cacheManager = new CaffeineCacheManager();
+						cacheManager.setCaffeine(caffeineCacheBuilder());
+						return cacheManager;
+					}
+
+					Caffeine<Object, Object> caffeineCacheBuilder() {
+						return Caffeine.newBuilder()
+								.expireAfterWrite(5, TimeUnit.MINUTES)
+								.maximumSize(1000)
+								.recordStats();
+					}
+				}
+
+			-	Bước 3: Sử dụng CacheManager trong service
+				@Service
+				public class UserService {
+
+					private final CacheManager cacheManager;
+
+					public UserService(CacheManager cacheManager) {
+						this.cacheManager = cacheManager;
+					}
+
+					public User getUserById(Long id) {
+						Cache cache = cacheManager.getCache("user");
+						User user = cache.get(id, User.class);
+						if (user == null) {
+							user = userRepository.findById(id).orElse(null);
+							if (user != null) {
+								cache.put(id, user);
+							}
+						}
+						return user;
+					}
+				}
+
+				Trong ví dụ này, ta khai báo bean CaffeineCacheManager trong file cấu hình CacheConfiguration. Trong đó, ta sử dụng phương thức caffeineCacheBuilder để thiết lập các cấu hình cho cache như thời gian sống của cache và số lượng phần tử tối đa được lưu trữ trong cache. Sau đó, ta sử dụng CacheManager để lấy cache theo tên, và thực hiện lưu trữ và truy xuất đối tượng User trong cache.
+
+				Chú ý: Để sử dụng cache trong Spring Boot, ta cần cấu hình @EnableCaching trên class chứa method main của ứng dụng.
+
+				@SpringBootApplication
+				@EnableCaching
+				public class MyApplication {
+					public static void main(String[] args) {
+						SpringApplication.run(MyApplication.class, args);
+					}
+				}
+
+			-	Bước 4: Sử dụng annotation @Cacheable để đánh dấu method cần sử dụng cache
+				@Service
+				public class ProductService {
+
+					@Cacheable(value = "productCache", key = "#id")
+					public Product getProductById(Long id) {
+						return productRepository.findById(id).orElse(null);
+					}
+				}
+
+				Trong ví dụ này, ta sử dụng annotation @Cacheable trên method getProductById để đánh dấu rằng method này cần sử dụng cache. Ta truyền vào giá trị value để chỉ định tên của cache, và giá trị key để chỉ định key của cache. Khi method này được gọi, Spring Boot sẽ kiểm tra xem có dữ liệu nào trong cache với key tương ứng không. Nếu có, nó sẽ trả về dữ liệu đó từ cache, ngược lại nó sẽ thực hiện truy vấn database và lưu dữ liệu vào cache trước khi trả về kết quả.
+
+			-	Bước 5: Sử dụng annotation @CachePut để cập nhật cache
+				@Service
+				public class ProductService {
+
+					@CachePut(value = "productCache", key = "#product.id")
+					public Product updateProduct(Product product) {
+						productRepository.save(product);
+						return product;
+					}
+				}
+
+				Trong ví dụ này, ta sử dụng annotation @CachePut trên method updateProduct để cập nhật dữ liệu trong cache. Khi method này được gọi, nó sẽ thực hiện việc cập nhật dữ liệu trong database, sau đó lưu dữ liệu mới vào cache.
+
+			-	Bước 6: Sử dụng annotation @CacheEvict để xóa dữ liệu khỏi cache
+				@Service
+				public class ProductService {
+
+					@CacheEvict(value = "productCache", key = "#id")
+					public void deleteProduct(Long id) {
+						productRepository.deleteById(id);
+					}
+				}
+
+				Trong ví dụ này, ta sử dụng annotation @CacheEvict trên method deleteProduct để xóa dữ liệu khỏi cache. Khi method này được gọi, nó sẽ thực hiện việc xóa dữ liệu trong database, sau đó xóa dữ liệu tương ứng khỏi cache.
+
+				Chú ý: Để sử dụng các annotation @Cacheable, @CachePut và @CacheEvict trong Spring Boot, ta cần cấu hình @EnableCaching trên class chứa method main của ứng dụng, tương tự như trong bước 3.
+
+
+		7.3	Guava Cache: là một thư viện cache được phát triển bởi Google và cung cấp các tính năng như in-memory caching, tự động xoá cache và nhiều hơn nữa. Nó hỗ trợ các cơ chế thay đổi kích thước, đồng bộ hóa và phân bổ bộ nhớ thông minh.
+			Dưới đây là các bước để sử dụng Guava Cache trong Spring Boot:
+			-	Bước 1: Thêm dependency trong file pom.xml:
+				<dependency>
+					<groupId>com.google.guava</groupId>
+					<artifactId>guava</artifactId>
+					<version>30.1-jre</version>
+				</dependency>
+			
+			-	Bước 2: Định nghĩa Bean GuavaCache trong file AppConfig.java:
+				@Configuration
+				public class AppConfig {
+				
+					@Bean
+					public CacheManager cacheManager() {
+						return new GuavaCacheManager("myCache");
+					}
+				}
+
+			-	Bước 3: Tạo một service để sử dụng GuavaCache, ví dụ như sau:
+				@Service
+				public class MyService {
+				
+					@Autowired
+					private CacheManager cacheManager;
+				
+					public String getCachedData(String key) {
+						Cache cache = cacheManager.getCache("myCache");
+						String data = cache.getIfPresent(key);
+						if (data == null) {
+							data = "data for " + key;
+							cache.put(key, data);
+						}
+						return data;
+					}
+				}
+
+			Trong ví dụ trên, service MyService sử dụng GuavaCache để lưu trữ dữ liệu trong cache. Khi phương thức getCachedData được gọi, service sẽ kiểm tra xem dữ liệu đã được lưu trữ trong cache hay chưa. Nếu đã được lưu trữ, dữ liệu sẽ được lấy từ cache. Nếu chưa được lưu trữ, service sẽ tính toán và lưu trữ dữ liệu vào cache.
+
+			Lưu ý rằng trong ví dụ này, chúng ta chỉ định nghĩa một cache duy nhất với tên là "myCache". Ta có thể định nghĩa nhiều cache khác nhau với các tên khác nhau.
+
+			Đó là các bước cơ bản để sử dụng Guava Cache trong Spring Boot.
+
+
+		7.4	Hazelcast: là một thư viện cache phân tán được sử dụng để tối ưu hóa hiệu suất ứng dụng Java. Nó hỗ trợ in-memory caching, disk-based caching, các cơ chế evict khác nhau và cơ chế phân bổ bộ nhớ thông minh.
+			Để sử dụng Hazelcast trong Spring Boot, ta có thể làm theo các bước sau:
+
+			-	Bước 1: Thêm dependency của Hazelcast trong file pom.xml:
+				<dependency>
+					<groupId>com.hazelcast</groupId>
+					<artifactId>hazelcast</artifactId>
+					<version>4.2</version>
+				</dependency>
+			
+			-	Bước 2: Cấu hình Hazelcast trong file application.properties hoặc application.yml:
+				hazelcast:
+				instance-name: hazelcast-instance
+				network:
+					join:
+					multicast:
+						enabled: false
+					tcp-ip:
+						enabled: true
+						members: 127.0.0.1
+
+			-	Bước 3: Tạo một HazelcastInstance bean trong file cấu hình Spring Boot:
+				@Configuration
+				public class HazelcastConfig {
+
+					@Bean
+					public HazelcastInstance hazelcastInstance() {
+						Config config = new Config();
+						return Hazelcast.newHazelcastInstance(config);
+					}
+
+				}
+
+			-	Bước 4: Sử dụng HazelcastInstance trong ứng dụng:
+				@Service
+				public class MyService {
+
+					@Autowired
+					private HazelcastInstance hazelcastInstance;
+
+					public void putDataToMap(String mapName, String key, Object value) {
+						Map<String, Object> map = hazelcastInstance.getMap(mapName);
+						map.put(key, value);
+					}
+
+					public Object getDataFromMap(String mapName, String key) {
+						Map<String, Object> map = hazelcastInstance.getMap(mapName);
+						return map.get(key);
+					}
+
+				}
+
+			
+		7.5	Redis: là một hệ thống cơ sở dữ liệu cache key-value được sử dụng rộng rãi trong các ứng dụng web. Nó cung cấp tính năng cache phân tán, đồng bộ hóa và bảo mật.
+			Để sử dụng thư viện Redis trong Spring Boot, bạn có thể tuân theo các bước sau:
+
+			-	Bước 1: Thêm Redis dependency vào file pom.xml:
+				<dependency>
+					<groupId>org.springframework.boot</groupId>
+					<artifactId>spring-boot-starter-data-redis</artifactId>
+				</dependency>
+
+			-	Bước 2: Tạo cấu hình Redis thông qua file application.properties hoặc application.yml. Ví dụ:
+				spring.redis.host=localhost
+				spring.redis.port=6379
+
+			-	Bước 3: Tạo RedisService class để định nghĩa các phương thức cần thiết để tương tác với Redis. Ví dụ:
+				@Service
+				public class RedisService {
+
+				@Autowired
+				private RedisTemplate<String, Object> redisTemplate;
+
+				public void set(String key, Object value) {
+					redisTemplate.opsForValue().set(key, value);
+				}
+
+				public Object get(String key) {
+					return redisTemplate.opsForValue().get(key);
+				}
+
+				public void delete(String key) {
+					redisTemplate.delete(key);
+				}
+
+				}
+
+			-	Bước 4: Sử dụng RedisService trong các class cần thiết. Ví dụ:
+				@RestController
+				public class ExampleController {
+
+				@Autowired
+				private RedisService redisService;
+
+				@GetMapping("/example/{key}")
+				public Object getExample(@PathVariable("key") String key) {
+					Object value = redisService.get(key);
+					if (value == null) {
+					value = "default value";
+					redisService.set(key, value);
+					}
+					return value;
+				}
+
+				}
+
+			-	Bước 5: Chạy ứng dụng và kiểm tra kết quả. Ví dụ:
+				@SpringBootApplication
+				public class RedisExampleApplication {
+
+				public static void main(String[] args) {
+					SpringApplication.run(RedisExampleApplication.class, args);
+				}
+
+				}
+			Khi ứng dụng chạy, RedisService sẽ được tạo ra và tự động injected vào ExampleController thông qua dependency injection của Spring Framework. Trong phương thức getExample(), chúng ta sử dụng RedisService để lấy giá trị từ Redis theo key được truyền vào. Nếu giá trị không tồn tại trong Redis, chúng ta đặt giá trị mặc định và lưu vào Redis bằng phương thức set() của RedisService.
+
+			Chúng ta có thể sử dụng Postman để gọi API và kiểm tra kết quả. Ví dụ:
+
+			GET http://localhost:8080/example/myKey -> kết quả trả về là "default value" và lưu vào Redis với key là "myKey".
+			GET http://localhost:8080/example/myKey -> kết quả trả về là "default value" từ Redis với key là "myKey".
+			Để sử dụng Redis, chúng ta cần cài đặt Redis server trên máy tính hoặc sử dụng Redis server đã được cài đặt trên môi trường phát triển hoặc sản phẩm.
+
+		7.6	Memcached: là một hệ thống cache phân tán được sử dụng để tối ưu hóa hiệu suất các ứng dụng web. Nó cung cấp tính năng cache in-memory, đồng bộ hóa và cơ chế phân bổ bộ nhớ thông minh.
+			-	Bước 1: Thêm dependency của thư viện Memcached vào file pom.xml của ứng dụng Spring Boot:
+				<dependency>
+					<groupId>net.spy</groupId>
+					<artifactId>spymemcached</artifactId>
+					<version>2.12.3</version>
+				</dependency>
+			
+			-	Bước 2: Định nghĩa bean cho MemcachedClient trong file cấu hình (ví dụ application.yml hoặc application.properties):
+				memcached:
+				servers: localhost:11211
+				opTimeout: 1000
+				timeoutExceptionThreshold: 1998
+				timeoutRatio: 2
+			
+			-	Bước 3: Tạo class để sử dụng MemcachedClient:
+				@Component
+				public class MemcachedService {
+
+					private final MemcachedClient memcachedClient;
+
+					@Autowired
+					public MemcachedService(MemcachedClient memcachedClient) {
+						this.memcachedClient = memcachedClient;
+					}
+
+					public void set(String key, int exp, Object value) throws Exception {
+						memcachedClient.set(key, exp, value);
+					}
+
+					public Object get(String key) throws Exception {
+						return memcachedClient.get(key);
+					}
+
+					public void delete(String key) throws Exception {
+						memcachedClient.delete(key);
+					}
+				}
+
+				Trong đó, MemcachedClient là một bean đã được định nghĩa trong file cấu hình ở bước 2.
+
+			-	Bước 4: Sử dụng MemcachedService để lưu và lấy dữ liệu từ Memcached:
+				@RestController
+				@RequestMapping("/memcached")
+				public class MemcachedController {
+
+					private final MemcachedService memcachedService;
+
+					@Autowired
+					public MemcachedController(MemcachedService memcachedService) {
+						this.memcachedService = memcachedService;
+					}
+
+					@PostMapping("/{key}/{exp}/{value}")
+					public void set(@PathVariable String key, @PathVariable int exp, @PathVariable String value) throws Exception {
+						memcachedService.set(key, exp, value);
+					}
+
+					@GetMapping("/{key}")
+					public String get(@PathVariable String key) throws Exception {
+						Object value = memcachedService.get(key);
+						return value == null ? null : value.toString();
+					}
+
+					@DeleteMapping("/{key}")
+					public void delete(@PathVariable String key) throws Exception {
+						memcachedService.delete(key);
+					}
+				}
+
+				Trong đó, MemcachedController là một REST controller, cung cấp các API để lưu, lấy và xóa dữ liệu từ Memcached.
+
+				Lưu ý: Bạn cần cài đặt Memcached trên máy tính của mình và khởi động nó trước khi chạy ứng dụng Spring Boot để thực hiện các ví dụ trên.	
+
+		Các thư viện cache này đều có các tính năng và cơ chế khác nhau, tùy thuộc vào yêu cầu và tính chất của ứng dụng mà ta có thể lựa chọn thư viện phù hợp.
+
+
+=======================================
