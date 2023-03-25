@@ -1,0 +1,11 @@
+I.  Project Maven
+    1.  New Maven Project
+        - Group ID: Nhận biết 1 nhóm các project nằm trong 1 cty hay tổ chức
+        - Artifact Id: Định danh dự án
+        - Version:
+        - Package: Thành phần trong dự án
+        ---------------
+        - Group ID: Domain, tên miền => ví dụ: com.laptrinhjavaweb
+        - Artifact Id: Tên project
+        - Version: 1.0
+        - Packaging: jar 
