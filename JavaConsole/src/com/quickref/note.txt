@@ -1,0 +1,198 @@
+https://quickref.me/java
+===============================
+Java Collections Framework
+	1. List: là một danh sách được sắp xếp theo thứ tự chèn. List cho phép chúng ta thêm, xóa và sửa đổi các phần tử bên trong nó. List có thể chứa các phần tử trùng lặp.
+	
+		Ưu điểm:
+		
+		Cho phép lưu trữ các phần tử trùng lặp.
+		Có thể truy cập các phần tử bằng index.
+		Nhược điểm:
+		
+		Thời gian tìm kiếm các phần tử sử dụng phương thức get() không hiệu quả.
+		Code ví dụ:
+		
+		List<String> list = new ArrayList<>();
+		list.add("A");
+		list.add("B");
+		list.add("C");
+		System.out.println(list);
+		// Output: [A, B, C]
+	2. Set: là một tập hợp các phần tử duy nhất. Set không có thứ tự cụ thể.
+	
+		Ưu điểm:
+		
+		Không cho phép lưu trữ các phần tử trùng lặp.
+		Có thể sử dụng để loại bỏ các phần tử trùng lặp từ danh sách.
+		Nhược điểm:
+		
+		Không thể truy cập các phần tử bằng index.
+		Code ví dụ:
+		
+		Set<String> set = new HashSet<>();
+		set.add("A");
+		set.add("B");
+		set.add("C");
+		set.add("A");
+		System.out.println(set);
+		// Output: [A, B, C]
+	3. Queue: là một hàng đợi đầu vào đầu ra, nghĩa là các phần tử được thêm vào hàng đợi đầu tiên sẽ được lấy ra đầu tiên.
+	
+		Ưu điểm:
+		
+		Giúp quản lý thứ tự các phần tử được thêm vào.
+		Nhược điểm:
+		
+		Không thể truy cập các phần tử bằng index.
+		Code ví dụ:
+		
+		Queue<String> queue = new LinkedList<>();
+		queue.add("A");
+		queue.add("B");
+		queue.add("C");
+		System.out.println(queue.remove());
+		// Output: A
+	
+	4. Map: là một bảng ánh xạ từ khoá đến giá trị. Mỗi khoá là duy nhất và được sử dụng để truy cập giá trị tương ứng.
+	
+		Ưu điểm:
+		
+		Cho phép truy cập giá trị bằng cách sử dụng khoá.
+		Có thể lưu trữ các giá trị khác nhau cho cùng một khoá.
+		Nhược điểm:
+		
+		Không có thứ tự cụ thể cho các khoá và giá trị trong Map.
+		
+		Code ví dụ:
+		Map<Integer, String> map = new HashMap<>();
+		map.put(1, "A");
+		map.put(2, "B");
+		map.put(3, "C");
+		System.out.println(map.get(2));
+		// Output: B
+	
+	5.	Stack: là một ngăn xếp, nghĩa là phần tử được thêm vào sau cùng sẽ được lấy ra trước tiên.
+
+		Ưu điểm:
+		
+		Giúp quản lý thứ tự các phần tử được thêm vào.
+		Nhược điểm:
+		
+		Không thể truy cập các phần tử bằng index.
+		Code ví dụ:
+		
+		Stack<String> stack = new Stack<>();
+		stack.push("A");
+		stack.push("B");
+		stack.push("C");
+		System.out.println(stack.pop());
+		// Output: C
+		
+	6.	PriorityQueue: là một hàng đợi ưu tiên, nghĩa là phần tử có độ ưu tiên cao hơn sẽ được lấy ra trước.
+
+		Ưu điểm:
+		
+		Cho phép quản lý thứ tự các phần tử theo độ ưu tiên.
+		Nhược điểm:
+		
+		Không có thứ tự cụ thể cho các phần tử có cùng độ ưu tiên.
+		Code ví dụ:
+		
+		PriorityQueue<Integer> pq = new PriorityQueue<>();
+		pq.add(3);
+		pq.add(1);
+		pq.add(2);
+		System.out.println(pq.poll());
+		// Output: 1
+				
+	7.	ArrayList
+		Ưu điểm: thao tác truy cập nhanh, cho phép thêm, xóa, sửa phần tử trong danh sách.
+		Nhược điểm: thao tác thêm, xóa ở vị trí bất kỳ chậm hơn so với LinkedList.
+		Ví dụ:
+		
+		List<String> list = new ArrayList<>();
+		list.add("apple");
+		list.add("banana");
+		list.add("cherry");
+		System.out.println(list); // [apple, banana, cherry]
+	
+	8.	LinkedList
+		Ưu điểm: thao tác thêm, xóa nhanh ở vị trí bất kỳ, tốn ít bộ nhớ hơn ArrayList.
+		Nhược điểm: thao tác truy cập chậm hơn ArrayList.
+		Ví dụ:	
+		
+		List<String> list = new LinkedList<>();
+		list.add("apple");
+		list.add("banana");
+		list.add("cherry");
+		System.out.println(list); // [apple, banana, cherry]
+				
+	9.	HashSet
+		Ưu điểm: tìm kiếm nhanh, không cho phép phần tử trùng lặp.
+		Nhược điểm: không đảm bảo thứ tự của phần tử.
+		Ví dụ:
+		
+		Set<String> set = new HashSet<>();
+		set.add("apple");
+		set.add("banana");
+		set.add("cherry");
+		System.out.println(set); // [banana, cherry, apple]
+		
+	10.	TreeSet
+		Ưu điểm: sắp xếp phần tử theo thứ tự tăng dần hoặc giảm dần, cho phép tìm kiếm nhanh.
+		Nhược điểm: thao tác thêm, xóa chậm hơn so với HashSet và LinkedHashSet.
+		Ví dụ:
+		
+		Set<String> set = new TreeSet<>();
+		set.add("apple");
+		set.add("banana");
+		set.add("cherry");
+		System.out.println(set); // [apple, banana, cherry]
+	
+	11.	LinkedHashSet
+		Ưu điểm: duy trì thứ tự của phần tử, cho phép tìm kiếm nhanh.
+		Nhược điểm: thao tác thêm, xóa chậm hơn so với HashSet.
+		Ví dụ:
+		
+		Set<String> set = new LinkedHashSet<>();
+		set.add("apple");
+		set.add("banana");
+		set.add("cherry");
+		System.out.println(set); // [apple, banana, cherry]
+		
+	12.	HashMap
+		Ưu điểm: tìm kiếm nhanh, cho phép lưu trữ key-value pairs, không đảm bảo thứ tự của key-value pairs.
+		Nhược điểm: không đảm bảo thứ tự của key-value pairs.
+		Ví dụ:
+		
+		Map<String, Integer> map = new HashMap<>();
+		map.put("apple", 1);
+		map.put("banana", 2);
+		map.put("cherry", 3);
+		System.out.println(map); // {banana=2, cherry=3, apple=1}
+		
+	13.	TreeMap
+		Ưu điểm: sắp xếp key-value pairs theo thứ tự tăng dần hoặc giảm dần, cho phép tìm kiếm nhanh.
+		Nhược điểm: thao tác thêm, xóa chậm hơn so với HashMap và LinkedHashMap.
+		Ví dụ:
+		
+		Map<String, Integer> map = new TreeMap<>();
+		map.put("apple", 1);
+		map.put("banana", 2);
+		map.put("cherry", 3);
+		System.out.println(map); // {apple=1, banana=2, cherry=3}
+		
+	14.	LinkedHashMap
+		Ưu điểm: duy trì thứ tự của key-value pairs, cho phép tìm kiếm nhanh.
+		Nhược điểm: thao tác thêm, xóa chậm hơn so với HashMap.
+		Ví dụ:
+		
+		Map<String, Integer> map = new LinkedHashMap<>();
+		map.put("apple", 1);
+		map.put("banana", 2);
+		map.put("cherry", 3);
+		System.out.println(map); // {apple=1, banana=2, cherry=3}
+		
+	Đây là một số cấu trúc dữ liệu phổ biến trong JCF. Ngoài ra, JCF còn có nhiều cấu trúc dữ liệu khác như Vector, Stack, Hashtable, Properties, etc. Tuy nhiên, các cấu trúc này không được sử dụng phổ biến trong ứng dụng hiện đại do có các cấu trúc tương tự nhưng tốc độ xử lý chậm hơn.
+
+======================================
