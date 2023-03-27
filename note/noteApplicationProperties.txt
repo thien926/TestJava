@@ -1,0 +1,76 @@
+Dưới đây là một số thành phần phổ biến có thể có trong file application.properties trong Spring Boot:
+
+Cấu hình port của ứng dụng:
+	server.port=8080
+
+Cấu hình context path của ứng dụng:
+	server.servlet.context-path=/myapp
+
+Cấu hình thông tin kết nối đến cơ sở dữ liệu:
+	spring.datasource.url=jdbc:mysql://localhost:3306/mydatabase
+	spring.datasource.username=myusername
+	spring.datasource.password=mypassword
+
+Cấu hình thông tin logging:
+	logging.level.root=INFO
+	logging.file=myapp.log
+
+Cấu hình các tài nguyên tĩnh (ví dụ: css, js, hình ảnh):
+	spring.resources.static-locations=classpath:/static/
+
+Cấu hình tài nguyên được nén:
+	spring.resources.chain.strategy.content.enabled=true
+	spring.resources.chain.strategy.content.paths=/**
+
+Cấu hình các bean và thuộc tính của Spring:
+	mybean.name=My Bean
+	mybean.enabled=true
+
+Cấu hình các giá trị mặc định cho Spring:
+	spring.main.web-application-type=none
+
+Cấu hình các thư viện bên ngoài:
+	spring.jpa.properties.hibernate.dialect=org.hibernate.dialect.MySQL5Dialect
+	spring.redis.host=localhost
+	spring.redis.port=6379
+
+Cấu hình các thông số bảo mật:
+	spring.security.user.name=myusername
+	spring.security.user.password=mypassword
+
+==================================================================================
+Dưới đây là danh sách các giá trị spring.jpa.properties.hibernate.dialect phổ biến mà bạn có thể sử dụng trong application.properties để cấu hình Hibernate trong Spring Boot:
+
+MySQL:
+	spring.jpa.properties.hibernate.dialect=org.hibernate.dialect.MySQL5Dialect
+
+PostgreSQL:
+	spring.jpa.properties.hibernate.dialect=org.hibernate.dialect.PostgreSQLDialect
+
+Oracle:
+	spring.jpa.properties.hibernate.dialect=org.hibernate.dialect.Oracle10gDialect
+
+SQL Server:
+	spring.jpa.properties.hibernate.dialect=org.hibernate.dialect.SQLServerDialect
+
+H2:
+	spring.jpa.properties.hibernate.dialect=org.hibernate.dialect.H2Dialect
+
+MariaDB:
+	spring.jpa.properties.hibernate.dialect=org.hibernate.dialect.MariaDBDialect
+
+DB2:
+	spring.jpa.properties.hibernate.dialect=org.hibernate.dialect.DB2Dialect
+
+Sybase:
+	spring.jpa.properties.hibernate.dialect=org.hibernate.dialect.SybaseDialect
+
+SQLite:
+	spring.jpa.properties.hibernate.dialect=org.hibernate.dialect.SQLiteDialect
+
+HSQL:
+	spring.jpa.properties.hibernate.dialect=org.hibernate.dialect.HSQLDialect
+
+===========================================================================================
+
+

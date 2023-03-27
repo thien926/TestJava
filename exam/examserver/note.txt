@@ -1,3 +1,4 @@
+https://www.youtube.com/playlist?list=PL0zysOflRCel5kT-AiGyy5oMabnlilkIS
 ----------- Init Project ----------------
 1.	pom.xml
 	-	<parent>
@@ -23,13 +24,48 @@
 				<artifactId>spring-boot-starter-web</artifactId>
 			</dependency>
 			<dependency>
-				<groupId>com.mysql</groupId>
-				<artifactId>mysql-connector-j</artifactId>
-				<scope>runtime</scope>
+				<groupId>mysql</groupId>
+				<artifactId>mysql-connector-java</artifactId>
+				<version>8.0.27</version>
 			</dependency>
 			<dependency>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-starter-test</artifactId>
 				<scope>test</scope>
 			</dependency>
+			<dependency>
+				<groupId>org.projectlombok</groupId>
+				<artifactId>lombok</artifactId>
+				<optional>true</optional>
+				<!--<version>1.18.22</version>-->
+			</dependency>
 		</dependencies>
+
+2.	Tạo class main
+
+package com.exam;
+
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+
+@SpringBootApplication
+public class ExamServerApplication {
+	public static void main(String[] args) {
+		SpringApplication.run(ExamServerApplication.class, args);
+	}
+}
+
+3.	application.properties
+	server.port = 8080
+	#database configuration
+	spring.datasource.url = jdbc:mysql://localhost:3306/exam
+	spring.datasource.username = root
+	spring.datasource.password = thien142857
+	
+	
+	#jpa configuration
+	spring.jpa.properties.hibernate.dialect = org.hibernate.dialect.MySQL8Dialect
+	spring.jpa.hibernate.ddl-auto = create-drop
+	spring.jpa.show-sql = true
+	spring.jpa.properties.hibernate.format_sql = true
+		
