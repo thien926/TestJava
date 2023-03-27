@@ -9,3 +9,5 @@ I.  Project Maven
         - Artifact Id: Tên project
         - Version: 1.0
         - Packaging: jar 
+    2.  Test
+
