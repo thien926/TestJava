@@ -1,0 +1,9 @@
+----------------------------------------------------------
+docker run -d -p 80:80 docker/getting-started
+docker pull postgres:13
+docker run --name postgres13 -e POSTGRES_PASSWORD=mypassword -d -p 5432:5432 postgres:13
+----------------------------------------------------------
+dbeaver
+----------------------------------------------------------
+https://drive.google.com/drive/folders/1kDteLFfe_Req35DTT38Wy1E5ZKuvO0Xv?usp=sharing
+----------------------------------------------------------
