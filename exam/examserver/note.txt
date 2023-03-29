@@ -1,4 +1,5 @@
 https://www.youtube.com/playlist?list=PL0zysOflRCel5kT-AiGyy5oMabnlilkIS
+https://www.youtube.com/watch?v=CCG_dsDtTJc&list=PL0zysOflRCel5kT-AiGyy5oMabnlilkIS&index=7
 ----------- Init Project ----------------
 1.	pom.xml
 	-	<parent>
