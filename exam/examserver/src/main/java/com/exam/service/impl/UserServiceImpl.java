@@ -1,10 +1,14 @@
 package com.exam.service.impl;
 
+import java.util.HashSet;
+import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.exam.model.Role;
 import com.exam.model.User;
 import com.exam.model.UserRole;
 import com.exam.repo.RoleRepository;
@@ -21,29 +25,43 @@ public class UserServiceImpl implements UserService {
 	private RoleRepository roleRepository;
 
 	@Override
-	public User createUser(User user, Set<UserRole> userRoles) throws Exception {
-		User local = this.userRepository.findByUsername(user.getUsername());
-		if(local !=  null) {
-			throw new Exception("User already present!!");
-		}
-		else {
-			for(final UserRole ur : userRoles) {
-				roleRepository.save(ur.getRole());
+	public User save(User user, Long id, Long roleId) {
+		if(id == null) {
+			Set<UserRole> userRoles = new HashSet<>();
+			Role role = roleRepository.findById(roleId).get();
+			UserRole userRole = new UserRole();
+			userRole.setRole(role);
+			userRole.setUser(user);
+			userRoles.add(userRole);
+			
+			user.setUserRoles(userRoles);
+			user = userRepository.save(user); 
+		} else {
+			Optional<User> roleDB = userRepository.findById(id);
+			if(roleDB.isPresent()) {
+				user.setId(id);
+				user = userRepository.save(user);
+			} else {
+				user = new User();
 			}
-			user.getUserRoles().addAll(userRoles);
-			local = this.userRepository.save(user);
 		}
-		return local;
+		return user;
 	}
 
 	@Override
-	public User getUser(String username) {
-		return this.userRepository.findByUsername(username);
+	public User findByUsername(String username) {
+		User user = userRepository.findByUsername(username);
+		return user != null ? user : new User();
 	}
 
 	@Override
-	public void deleteUser(Long userId) {
-		this.userRepository.deleteById(userId);
+	public void deleteById(Long userId) {
+		this.userRepository.deleteById(userId);;
+	}
+
+	@Override
+	public List<User> getAll() {
+		return userRepository.findAll();
 	}
 
 }
