@@ -1,0 +1,10 @@
+=========== PHẦN SECURITY ================
+1.	RestAuthenticationEntryPoint implements AuthenticationEntryPoint  :
+	-	Được sử dụng để xác định cách xử lý các yêu cầu không được xác thực (unauthenticated requests) 
+2.	CustomAccessDeniedHandler implements AccessDeniedHandler
+	-	Được sử dụng để xác định cách xử lý các yêu cầu bị từ chối truy cập (access denied requests).
+3.	UserService và UserServiceImpl
+4.	JwtService
+5.	JwtAuthenticationTokenFilter extends UsernamePasswordAuthenticationFilter
+	-	Được sử dụng để xác thực người dùng thông qua tên đăng nhập và mật khẩu.
+6.	 SecutiryConfig extends WebSecurityConfigurerAdapter
