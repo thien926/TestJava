@@ -8,3 +8,10 @@
 5.	JwtAuthenticationTokenFilter extends UsernamePasswordAuthenticationFilter
 	-	Được sử dụng để xác thực người dùng thông qua tên đăng nhập và mật khẩu.
 6.	 SecutiryConfig extends WebSecurityConfigurerAdapter
+
+=========== PHẦN MODELMAPPER =============
+1.	import ModelMapper pom.xml
+2.	Thêm config ModelMapper trong AppConfig
+3.	Sử dụng
+
+===========

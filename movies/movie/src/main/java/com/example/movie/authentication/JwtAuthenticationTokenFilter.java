@@ -1,6 +1,7 @@
 package com.example.movie.authentication;
 
 import java.io.IOException;
+import java.util.Optional;
 
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
@@ -33,24 +34,27 @@ public class JwtAuthenticationTokenFilter extends UsernamePasswordAuthentication
 		throws IOException, ServletException {
 		HttpServletRequest httpServletRequest = (HttpServletRequest) request;
 		String authToken = httpServletRequest.getHeader(TOKEN_HEADER);
-		authToken = authToken.substring(7);
-		
-		if(jwtService.validateTokenLogin(authToken)) {
-			String username = jwtService.getUsernameFromToken(authToken);
+		if(!Optional.ofNullable(authToken).isEmpty()) {
+			authToken = authToken.substring(7);
 			
-			UserDTO user = userService.findByUsername(username);
-			if(user != null) {
-				boolean enabled = true;
-				boolean accountNonExpired = true;
-				boolean credentialsNonExpired = true;
-				boolean accountNonLocked = true;
+			if(jwtService.validateTokenLogin(authToken)) {
+				String username = jwtService.getUsernameFromToken(authToken);
 				
-				UserDetails userDetails = new org.springframework.security.core.userdetails.User(username, user.getPassword(), enabled, accountNonExpired, credentialsNonExpired, accountNonLocked, userService.getAuthorities(username));
-				UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
-				authenticationToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(httpServletRequest));
-				SecurityContextHolder.getContext().setAuthentication(authenticationToken);
+				UserDTO user = userService.findByUsername(username);
+				if(user != null) {
+					boolean enabled = true;
+					boolean accountNonExpired = true;
+					boolean credentialsNonExpired = true;
+					boolean accountNonLocked = true;
+					
+					UserDetails userDetails = new org.springframework.security.core.userdetails.User(username, user.getPassword(), enabled, accountNonExpired, credentialsNonExpired, accountNonLocked, userService.getAuthorities(username));
+					UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
+					authenticationToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(httpServletRequest));
+					SecurityContextHolder.getContext().setAuthentication(authenticationToken);
+				}
 			}
 		}
+		
 		chain.doFilter(httpServletRequest, response);
 	}
 }
