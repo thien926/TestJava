@@ -1,0 +1,7 @@
+.ui-table-scrollable-body .ui-table-scrollable-header-box .ui-table-scrollable-header {
+    padding-bottom: 20px;
+}
+
+.ui-table-scrollable-body .ui-datatable-footer {
+    margin-bottom: -20px;
+}
