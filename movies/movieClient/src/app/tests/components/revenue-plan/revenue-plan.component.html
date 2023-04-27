@@ -1,0 +1,70 @@
+<p>revenue-plan works!</p>
+<form [formGroup]="usersForm">
+  <p-table
+    [value]="users.controls"
+    styleClass="p-datatable-gridlines"
+    [scrollable]="true"
+    scrollHeight="500px"
+  >
+    <ng-template pTemplate="caption"> Header </ng-template>
+    <ng-template pTemplate="header">
+      <tr>
+        <th>Code</th>
+        <th>Name</th>
+        <th>Description</th>
+        <th>Price</th>
+        <th>Quantity</th>
+        <th>InventoryStatus</th>
+        <th>Category</th>
+        <th>Image</th>
+        <th>Rating</th>
+        <th>Code</th>
+        <th>Name</th>
+        <th>Description</th>
+        <th>Price</th>
+        <th>Quantity</th>
+        <th>InventoryStatus</th>
+        <th>Category</th>
+        <th>Image</th>
+        <th>Rating</th>
+      </tr>
+    </ng-template>
+    <ng-template pTemplate="body" let-product let-rowIndex="rowIndex">
+      <tr [formGroup]="product">
+        <td>
+          <input type="text" formControlName="code" />
+          <button>add</button>
+          <button>delete</button>
+        </td>
+        <td>
+          <input type="text" formControlName="name" />
+          <button (click)="addNewItem(rowIndex)">add</button>
+          <button>delete</button>
+        </td>
+        <td><input type="text" formControlName="description" /></td>
+        <td><input type="text" formControlName="price" /></td>
+        <td><input type="text" formControlName="quantity" /></td>
+        <td><input type="text" formControlName="inventoryStatus" /></td>
+        <td><input type="text" formControlName="category" /></td>
+        <td><input type="text" formControlName="image" /></td>
+        <td><input type="text" formControlName="rating" /></td>
+      </tr>
+    </ng-template>
+    <ng-template pTemplate="footer">
+      <tr>
+        <td>Tổng:</td>
+        <td></td>
+        <td></td>
+        <td>999.99</td>
+        <td>99</td>
+        <td></td>
+        <td></td>
+        <td></td>
+        <td>99</td>
+      </tr>
+      <tr>
+        <td colspan="9"><button type="submit">Save</button></td>
+      </tr>
+    </ng-template>
+  </p-table>
+</form>
