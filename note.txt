@@ -10,4 +10,4 @@ I.  Project Maven
         - Version: 1.0
         - Packaging: jar 
     2.  Test
-test
+test máy mới
