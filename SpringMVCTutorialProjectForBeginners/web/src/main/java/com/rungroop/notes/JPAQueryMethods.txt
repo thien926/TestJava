@@ -1,0 +1,31 @@
+https://docs.spring.io/spring-data/jpa/reference/jpa/query-methods.html
+
+Table 1. Supported keywords inside method names
+Keyword        | Sample                               | JPQL snippet                                         | Giải thích
+---------------|--------------------------------------|------------------------------------------------------|------------------------------------------------------
+Distinct       | findDistinctByLastnameAndFirstname   | select distinct …​ where x.lastname = ?1 and x.firstname = ?2 | Lấy các kết quả duy nhất với điều kiện lastname và firstname
+And            | findByLastnameAndFirstname            | … where x.lastname = ?1 and x.firstname = ?2       | Lấy các kết quả với cả lastname và firstname khớp với giá trị
+Or             | findByLastnameOrFirstname             | … where x.lastname = ?1 or x.firstname = ?2        | Lấy các kết quả với hoặc lastname hoặc firstname khớp với giá trị
+Is, Equals     | findByFirstname, findByFirstnameIs, findByFirstnameEquals | … where x.firstname = ?1 | Lấy các kết quả với firstname khớp với giá trị
+Between        | findByStartDateBetween                | … where x.startDate between ?1 and ?2               | Lấy các kết quả với startDate nằm trong khoảng từ ?1 đến ?2
+LessThan       | findByAgeLessThan                     | … where x.age < ?1                                 | Lấy các kết quả với age nhỏ hơn ?1
+LessThanEqual  | findByAgeLessThanEqual               | … where x.age <= ?1                                | Lấy các kết quả với age nhỏ hơn hoặc bằng ?1
+GreaterThan    | findByAgeGreaterThan                  | … where x.age > ?1                                 | Lấy các kết quả với age lớn hơn ?1
+GreaterThanEqual | findByAgeGreaterThanEqual           | … where x.age >= ?1                                | Lấy các kết quả với age lớn hơn hoặc bằng ?1
+After          | findByStartDateAfter                 | … where x.startDate > ?1                           | Lấy các kết quả với startDate sau ?1
+Before         | findByStartDateBefore                | … where x.startDate < ?1                           | Lấy các kết quả với startDate trước ?1
+IsNull, Null   | findByAge(Is)Null                    | … where x.age is null                              | Lấy các kết quả với age là null
+IsNotNull, NotNull | findByAge(Is)NotNull               | … where x.age is not null                          | Lấy các kết quả với age không phải là null
+Like           | findByFirstnameLike                 | … where x.firstname like ?1                        | Lấy các kết quả với firstname giống như giá trị ?1
+NotLike        | findByFirstnameNotLike              | … where x.firstname not like ?1                    | Lấy các kết quả với firstname không giống như giá trị ?1
+StartingWith   | findByFirstnameStartingWith         | … where x.firstname like ?1 (parameter bound with appended %) | Lấy các kết quả với firstname bắt đầu bằng giá trị ?1
+EndingWith     | findByFirstnameEndingWith           | … where x.firstname like ?1 (parameter bound with prepended %) | Lấy các kết quả với firstname kết thúc bằng giá trị ?1
+Containing     | findByFirstnameContaining           | … where x.firstname like ?1 (parameter bound wrapped in %) | Lấy các kết quả với firstname chứa giá trị ?1
+OrderBy        | findByAgeOrderByLastnameDesc        | … where x.age = ?1 order by x.lastname desc        | Lấy các kết quả với age bằng ?1 và sắp xếp theo lastname giảm dần
+Not            | findByLastnameNot                   | … where x.lastname <> ?1                           | Lấy các kết quả với lastname khác giá trị ?1
+In             | findByAgeIn(Collection<Age> ages)   | … where x.age in ?1                                | Lấy các kết quả với age nằm trong tập hợp giá trị ?1
+NotIn          | findByAgeNotIn(Collection<Age> ages) | … where x.age not in ?1                            | Lấy các kết quả với age không nằm trong tập hợp giá trị ?1
+True           | findByActiveTrue()                  | … where x.active = true                            | Lấy các kết quả với active là true
+False          | findByActiveFalse()                 | … where x.active = false                           | Lấy các kết quả với active là false
+IgnoreCase     | findByFirstnameIgnoreCase           | … where UPPER(x.firstname) = UPPER(?1)             | Lấy các kết quả với firstname khớp với giá trị ?1 không phân biệt chữ hoa chữ thường
+
