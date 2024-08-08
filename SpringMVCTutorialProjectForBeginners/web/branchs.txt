@@ -3,3 +3,5 @@
 3.	feature/springmvc03NTier
 4.	feature/springmvc04services
 5.	feature/springmvc05controllers
+6.
+7.	feature/springmvc07layouts
