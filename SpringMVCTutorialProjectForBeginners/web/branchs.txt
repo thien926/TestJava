@@ -5,3 +5,4 @@
 5.	feature/springmvc05controllers
 6.
 7.	feature/springmvc07layouts
+8.	feature/springmvc08CRUD

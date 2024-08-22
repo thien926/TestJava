@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 
 import com.rungroop.web.dtos.ClubDto;
 import com.rungroop.web.entities.Club;
+import com.rungroop.web.mappers.ClubMapper;
 import com.rungroop.web.repositories.ClubRepository;
 import com.rungroop.web.services.ClubService;
 
@@ -19,19 +20,14 @@ public class ClubServiceImpl implements ClubService{
 	@Override
 	public List<ClubDto> findAllClubs() {
 		List<Club> clubs = clubRepository.findAll();
-		List<ClubDto> res = clubs.stream().map(club -> mapToClubDto(club)).collect(Collectors.toList());
+		List<ClubDto> res = clubs.stream().map(club -> ClubMapper.INSTANCE.toDto(club)).collect(Collectors.toList());
 		return res;
 	}
-	
-	private ClubDto mapToClubDto(Club club) {
-		ClubDto res = ClubDto.builder()
-						.id(club.getId())
-						.title(club.getTitle())
-						.photoUrl(club.getPhotoUrl())
-						.content(club.getContent())
-						.createdOn(club.getCreatedOn())
-						.updatedOn(club.getUpdatedOn())
-						.build();
-		return res;
+
+	@Override
+	public ClubDto saveClub(ClubDto clubDto) {
+		Club club = ClubMapper.INSTANCE.toEntity(clubDto);
+		clubRepository.save(club);
+		return ClubMapper.INSTANCE.toDto(club);
 	}
 }

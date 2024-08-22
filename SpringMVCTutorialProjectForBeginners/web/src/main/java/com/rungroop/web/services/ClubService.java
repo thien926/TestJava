@@ -6,4 +6,5 @@ import com.rungroop.web.dtos.ClubDto;
 
 public interface ClubService {
 	List<ClubDto> findAllClubs();
+	ClubDto saveClub(ClubDto clubDto);
 }
