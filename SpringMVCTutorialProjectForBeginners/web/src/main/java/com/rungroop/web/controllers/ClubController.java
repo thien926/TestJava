@@ -5,7 +5,6 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
-import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -16,6 +15,8 @@ import com.rungroop.web.dtos.ClubDto;
 import com.rungroop.web.entities.Club;
 import com.rungroop.web.mappers.ClubMapper;
 import com.rungroop.web.services.ClubService;
+
+import jakarta.validation.Valid;
 
 @Controller
 public class ClubController {
@@ -39,8 +40,14 @@ public class ClubController {
 	}
 	
 	@PostMapping("/clubs/new")
-	public ModelAndView saveCreationClub(@ModelAttribute("club") ClubDto clubDto
+	public ModelAndView saveCreationClub(@Valid @ModelAttribute("club") ClubDto clubDto
+			, BindingResult bindingResult
 			, ModelAndView mav) {
+		if (bindingResult.hasErrors()) {
+			mav.addObject("club", clubDto);
+			mav.setViewName("clubs/clubs-create");
+			return mav;
+		}
 		clubService.saveClub(clubDto);
 		mav.setViewName("redirect:/clubs");
 		return mav;
@@ -57,11 +64,12 @@ public class ClubController {
 	
 	@PostMapping("/clubs/{clubId}/edit")
 	public ModelAndView saveEditionClub(@PathVariable("clubId") long clubId
-			, @Validated @ModelAttribute("club") ClubDto clubDto
-			, BindingResult result
+			, @Valid @ModelAttribute("club") ClubDto clubDto
+			, BindingResult bindingResult
 			, ModelAndView mav) {
-		if (result.hasErrors()) {
+		if (bindingResult.hasErrors()) {
 			clubDto.setId(clubId);
+			mav.addObject("club", clubDto);
 			mav.setViewName("clubs/clubs-edit");
 			return mav;
 		}
