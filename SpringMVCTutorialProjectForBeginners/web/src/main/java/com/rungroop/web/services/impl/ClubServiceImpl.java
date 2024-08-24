@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import com.rungroop.web.dtos.ClubDto;
@@ -19,9 +20,10 @@ public class ClubServiceImpl implements ClubService{
 	
 	@Override
 	public List<ClubDto> findAllClubs() {
-		List<Club> clubs = clubRepository.findAll();
-		List<ClubDto> res = clubs.stream().map(club -> ClubMapper.INSTANCE.toDto(club)).collect(Collectors.toList());
-		return res;
+		return clubRepository.findAll(Sort.by(Sort.Direction.ASC, "id"))
+				.stream()
+				.map(ClubMapper.INSTANCE::toDto)
+				.collect(Collectors.toList());
 	}
 
 	@Override
@@ -29,5 +31,12 @@ public class ClubServiceImpl implements ClubService{
 		Club club = ClubMapper.INSTANCE.toEntity(clubDto);
 		clubRepository.save(club);
 		return ClubMapper.INSTANCE.toDto(club);
+	}
+
+	@Override
+	public ClubDto findById(long clubId) {
+		return clubRepository.findById(clubId)
+				.map(ClubMapper.INSTANCE::toDto)
+				.orElseThrow(() -> new IllegalArgumentException("Invalid Club Id: " + clubId));
 	}
 }
