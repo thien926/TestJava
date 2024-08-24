@@ -10,3 +10,4 @@
 10.	feature/springmvc10Validation
 11.	feature/springmvc11List/DetailPage
 12.	feature/springmvc12Delete
+13.	feature/springmvc13JPQL
