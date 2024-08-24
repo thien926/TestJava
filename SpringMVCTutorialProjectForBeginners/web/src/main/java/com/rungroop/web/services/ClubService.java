@@ -8,4 +8,5 @@ public interface ClubService {
 	List<ClubDto> findAllClubs();
 	ClubDto saveClub(ClubDto clubDto);
 	ClubDto findById(long clubId);
+	void deleteById(long clubId);
 }

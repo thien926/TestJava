@@ -17,8 +17,10 @@ import com.rungroop.web.mappers.ClubMapper;
 import com.rungroop.web.services.ClubService;
 
 import jakarta.validation.Valid;
+import lombok.extern.slf4j.Slf4j;
 
 @Controller
+@Slf4j
 public class ClubController {
 	@Autowired
 	private ClubService clubService;
@@ -26,9 +28,16 @@ public class ClubController {
 	// GetAll
 	@GetMapping("/clubs")
 	public ModelAndView listClubs(ModelAndView mav) {
-		List<ClubDto> clubs = clubService.findAllClubs();
-		mav.addObject("clubs", clubs);
-		mav.setViewName("clubs/clubs-list");
+		try {
+			List<ClubDto> clubs = clubService.findAllClubs();
+			mav.addObject("clubs", clubs);
+			mav.setViewName("clubs/clubs-list");
+		} catch (Exception e) {
+			log.error("Error occurred while saving club: ", e);
+			mav.addObject("errorMessage", "An error occurred while getting the clubs.");
+            mav.addObject("errorDetails", e.getMessage());
+            mav.setViewName("layouts/error");
+		}
 		return mav;
 	}
 	
@@ -45,13 +54,21 @@ public class ClubController {
 	public ModelAndView saveCreationClub(@Valid @ModelAttribute("club") ClubDto clubDto
 			, BindingResult bindingResult
 			, ModelAndView mav) {
-		if (bindingResult.hasErrors()) {
-			mav.addObject("club", clubDto);
-			mav.setViewName("clubs/clubs-create");
-			return mav;
+		try {
+			if (bindingResult.hasErrors()) {
+				mav.addObject("club", clubDto);
+				mav.setViewName("clubs/clubs-create");
+				return mav;
+			}
+			clubService.saveClub(clubDto);
+			mav.setViewName("redirect:/clubs");
+		} catch (Exception ex) {
+			log.error("Error occurred while saving club: ", ex);
+            mav.addObject("errorMessage", "An error occurred while saving the club.");
+            mav.addObject("errorDetails", ex.getMessage());
+            mav.setViewName("layouts/error");
 		}
-		clubService.saveClub(clubDto);
-		mav.setViewName("redirect:/clubs");
+		
 		return mav;
 	}
 	
@@ -59,9 +76,17 @@ public class ClubController {
 	@GetMapping("/clubs/{clubId}/edit")
 	public ModelAndView editClubForm(@PathVariable("clubId") long clubId
 			, ModelAndView mav) {
-		ClubDto dto = clubService.findById(clubId);
-		mav.addObject("club", dto);
-		mav.setViewName("clubs/clubs-edit");
+		try {
+			ClubDto dto = clubService.findById(clubId);
+			mav.addObject("club", dto);
+			mav.setViewName("clubs/clubs-edit");
+		} catch (Exception ex) {
+			log.error("Error occurred while editing club: ", ex);
+            mav.addObject("errorMessage", "An error occurred while editing the club.");
+            mav.addObject("errorDetails", ex.getMessage());
+            mav.setViewName("layouts/error");
+		}
+		
 		return mav;
 	}
 	
@@ -70,14 +95,22 @@ public class ClubController {
 			, @Valid @ModelAttribute("club") ClubDto clubDto
 			, BindingResult bindingResult
 			, ModelAndView mav) {
-		if (bindingResult.hasErrors()) {
-			clubDto.setId(clubId);
-			mav.addObject("club", clubDto);
-			mav.setViewName("clubs/clubs-edit");
-			return mav;
+		try {
+			if (bindingResult.hasErrors()) {
+				clubDto.setId(clubId);
+				mav.addObject("club", clubDto);
+				mav.setViewName("clubs/clubs-edit");
+				return mav;
+			}
+			clubService.saveClub(clubDto);
+			mav.setViewName("redirect:/clubs");
+		} catch (Exception ex) {
+			log.error("Error occurred while editing club: ", ex);
+            mav.addObject("errorMessage", "An error occurred while editing the club.");
+            mav.addObject("errorDetails", ex.getMessage());
+            mav.setViewName("layouts/error");
 		}
-		clubService.saveClub(clubDto);
-		mav.setViewName("redirect:/clubs");
+		
 		return mav;
 	}
 	
@@ -85,9 +118,34 @@ public class ClubController {
 	@GetMapping("/clubs/{clubId}")
 	public ModelAndView clubDetail(@PathVariable("clubId") long clubId
 			, ModelAndView mav) {
-		ClubDto dto = clubService.findById(clubId);
-		mav.addObject("club", dto);
-		mav.setViewName("clubs/clubs-detail");
+		try {
+			ClubDto dto = clubService.findById(clubId);
+			mav.addObject("club", dto);
+			mav.setViewName("clubs/clubs-detail");
+		} catch (Exception ex) {
+			log.error("Error occurred while getting detail club: ", ex);
+            mav.addObject("errorMessage", "An error occurred while getting the detail club.");
+            mav.addObject("errorDetails", ex.getMessage());
+            mav.setViewName("layouts/error");
+		}
+		
+		return mav;
+	}
+	
+	//Delete
+	@GetMapping("/clubs/{clubId}/delete")
+	public ModelAndView deleteClub(@PathVariable("clubId") long clubId
+			, ModelAndView mav) {
+		try {
+			clubService.deleteById(clubId);
+			mav.setViewName("redirect:/clubs");
+		} catch (Exception ex) {
+			log.error("Error occurred while deleting club: ", ex);
+            mav.addObject("errorMessage", "An error occurred while deleting the club.");
+            mav.addObject("errorDetails", ex.getMessage());
+            mav.setViewName("layouts/error");
+		}
+		
 		return mav;
 	}
 }

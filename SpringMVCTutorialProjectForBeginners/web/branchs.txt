@@ -8,3 +8,5 @@
 8.	feature/springmvc08CRUD
 9.	feature/springmvc09CRUDUpdate
 10.	feature/springmvc10Validation
+11.	feature/springmvc11List/DetailPage
+12.	feature/springmvc12Delete
