@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.rungroop.web.dtos.ClubDto;
@@ -146,6 +147,22 @@ public class ClubController {
             mav.setViewName("layouts/error");
 		}
 		
+		return mav;
+	}
+	
+	@GetMapping("/clubs/search")
+	public ModelAndView searchClub(@RequestParam("query") String query
+			, ModelAndView mav) {
+		try {
+			List<ClubDto> clubs = clubService.searchClubs(query);
+			mav.addObject("clubs", clubs);
+			mav.setViewName("clubs/clubs-list");
+		} catch (Exception ex) {
+			log.error("Error occurred while searching clubs: ", ex);
+            mav.addObject("errorMessage", "An error occurred while searching the clubs.");
+            mav.addObject("errorDetails", ex.getMessage());
+            mav.setViewName("layouts/error");
+		}
 		return mav;
 	}
 }
