@@ -39,4 +39,9 @@ public class ClubServiceImpl implements ClubService{
 				.map(ClubMapper.INSTANCE::toDto)
 				.orElseThrow(() -> new IllegalArgumentException("Invalid Club Id: " + clubId));
 	}
+
+	@Override
+	public void deleteById(long clubId) {
+		clubRepository.deleteById(clubId);
+	}
 }
