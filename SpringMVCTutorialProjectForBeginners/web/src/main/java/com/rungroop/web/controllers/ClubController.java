@@ -23,6 +23,7 @@ public class ClubController {
 	@Autowired
 	private ClubService clubService;
 	
+	// GetAll
 	@GetMapping("/clubs")
 	public ModelAndView listClubs(ModelAndView mav) {
 		List<ClubDto> clubs = clubService.findAllClubs();
@@ -31,6 +32,7 @@ public class ClubController {
 		return mav;
 	}
 	
+	// Create
 	@GetMapping("/clubs/new")
 	public ModelAndView createClubForm(ModelAndView mav) {
 		Club club = new Club();
@@ -53,6 +55,7 @@ public class ClubController {
 		return mav;
 	}
 	
+	// Update
 	@GetMapping("/clubs/{clubId}/edit")
 	public ModelAndView editClubForm(@PathVariable("clubId") long clubId
 			, ModelAndView mav) {
@@ -75,6 +78,16 @@ public class ClubController {
 		}
 		clubService.saveClub(clubDto);
 		mav.setViewName("redirect:/clubs");
+		return mav;
+	}
+	
+	//Detail
+	@GetMapping("/clubs/{clubId}")
+	public ModelAndView clubDetail(@PathVariable("clubId") long clubId
+			, ModelAndView mav) {
+		ClubDto dto = clubService.findById(clubId);
+		mav.addObject("club", dto);
+		mav.setViewName("clubs/clubs-detail");
 		return mav;
 	}
 }
