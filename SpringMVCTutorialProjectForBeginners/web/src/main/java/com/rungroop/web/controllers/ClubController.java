@@ -4,8 +4,11 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.servlet.ModelAndView;
 
@@ -36,8 +39,32 @@ public class ClubController {
 	}
 	
 	@PostMapping("/clubs/new")
-	public ModelAndView saveClub(@ModelAttribute("club") ClubDto clubDto
+	public ModelAndView saveCreationClub(@ModelAttribute("club") ClubDto clubDto
 			, ModelAndView mav) {
+		clubService.saveClub(clubDto);
+		mav.setViewName("redirect:/clubs");
+		return mav;
+	}
+	
+	@GetMapping("/clubs/{clubId}/edit")
+	public ModelAndView editClubForm(@PathVariable("clubId") long clubId
+			, ModelAndView mav) {
+		ClubDto dto = clubService.findById(clubId);
+		mav.addObject("club", dto);
+		mav.setViewName("clubs/clubs-edit");
+		return mav;
+	}
+	
+	@PostMapping("/clubs/{clubId}/edit")
+	public ModelAndView saveEditionClub(@PathVariable("clubId") long clubId
+			, @Validated @ModelAttribute("club") ClubDto clubDto
+			, BindingResult result
+			, ModelAndView mav) {
+		if (result.hasErrors()) {
+			clubDto.setId(clubId);
+			mav.setViewName("clubs/clubs-edit");
+			return mav;
+		}
 		clubService.saveClub(clubDto);
 		mav.setViewName("redirect:/clubs");
 		return mav;
