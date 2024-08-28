@@ -2,6 +2,7 @@ package com.rungroop.web.controllers;
 
 import java.util.List;
 
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
@@ -14,7 +15,6 @@ import org.springframework.web.servlet.ModelAndView;
 
 import com.rungroop.web.dtos.ClubDto;
 import com.rungroop.web.entities.Club;
-import com.rungroop.web.mappers.ClubMapper;
 import com.rungroop.web.services.ClubService;
 
 import jakarta.validation.Valid;
@@ -25,6 +25,9 @@ import lombok.extern.slf4j.Slf4j;
 public class ClubController {
 	@Autowired
 	private ClubService clubService;
+	
+	@Autowired
+    private ModelMapper modelMapper;
 	
 	// GetAll
 	@GetMapping("/clubs")
@@ -46,7 +49,7 @@ public class ClubController {
 	@GetMapping("/clubs/new")
 	public ModelAndView createClubForm(ModelAndView mav) {
 		Club club = new Club();
-		mav.addObject("club", ClubMapper.INSTANCE.toDto(club));
+		mav.addObject("club", modelMapper.map(club, ClubDto.class));
 		mav.setViewName("clubs/clubs-create");
 		return mav;
 	}
