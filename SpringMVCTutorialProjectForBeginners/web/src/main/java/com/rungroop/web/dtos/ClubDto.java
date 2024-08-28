@@ -1,7 +1,7 @@
 package com.rungroop.web.dtos;
 
 import java.time.LocalDateTime;
-import java.util.Set;
+import java.util.List;
 
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
@@ -34,5 +34,5 @@ public class ClubDto {
 
 	private LocalDateTime updatedOn;
 	
-	private Set<EventDto> events;
+	private List<EventDto> events;
 }
