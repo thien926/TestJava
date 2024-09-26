@@ -4,6 +4,7 @@ Dưới đây là một số bài tập để bạn luyện tập với Stream t
 
 1. **Lọc các phần tử**
    - Viết một chương trình lọc ra các số chẵn từ một danh sách các số nguyên.
+   - [Lời giải](./excercise_java_stream_methods/FilterElementsWithEvenNumbers.java)
 
 2. **Tính tổng các số**
    - Viết một chương trình tính tổng của tất cả các số trong một danh sách.
