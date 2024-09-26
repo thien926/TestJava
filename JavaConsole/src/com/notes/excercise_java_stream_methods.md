@@ -8,6 +8,7 @@ Dưới đây là một số bài tập để bạn luyện tập với Stream t
 
 2. **Tính tổng các số**
    - Viết một chương trình tính tổng của tất cả các số trong một danh sách.
+   - [Lời giải](./excercise_java_stream_methods/CalculateTheSumOfNumbersInTheList.java)
 
 3. **Đếm số lượng phần tử**
    - Viết một chương trình đếm số lượng phần tử trong một danh sách các chuỗi.
