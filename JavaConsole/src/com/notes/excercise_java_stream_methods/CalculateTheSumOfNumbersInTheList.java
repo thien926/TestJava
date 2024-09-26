@@ -18,7 +18,9 @@ public class Main {
         System.out.println("\nCách 2 : " + sum2 + "\n");
 
         // Cách 3
-        int sum3 = clone1.stream().reduce(0, (s1, s2) -> (s1 + s2));
+        int sum3 = clone1.stream().reduce(0, (sum, item) -> (sum + item));
+        // Nếu phần tử là object cần thêm Integer::sum để xác định là tính tổng theo phương thức add của Integer
+        // int sum3 = clone1.stream().reduce(0, (sum, item) -> (sum + item), Integer::sum);
         System.out.println("\nCách 3 : " + sum3 + "\n");
 
     }
