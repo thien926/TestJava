@@ -12,6 +12,7 @@ Dưới đây là một số bài tập để bạn luyện tập với Stream t
 
 3. **Đếm số lượng phần tử**
    - Viết một chương trình đếm số lượng phần tử trong một danh sách các chuỗi.
+   - [Lời giải](./excercise_java_stream_methods/CalculateTheCountOfElementInTheList.java)
 
 4. **Chuyển đổi các phần tử**
    - Viết một chương trình chuyển đổi danh sách các chuỗi thành danh sách độ dài của từng chuỗi.
