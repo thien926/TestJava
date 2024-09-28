@@ -4,8 +4,8 @@ import java.util.stream.Collectors;
 
 // Output:
 // Thời gian trung bình thực hiện:
-// Vòng lặp: 1,135,179 nanoseconds
-// Stream: 2,605,344 nanoseconds
+// Vòng lặp: 69,722 nanoseconds
+// Stream: 213,948 nanoseconds
 
 public class Main {
     public static void main(String[] args) {
@@ -16,7 +16,8 @@ public class Main {
         List<MethodTime> methodTimes = new ArrayList<>();
 
         // Lặp lại 1000 lần
-        for (int i = 0; i < 1000; i++) {
+        long loopCount = 1000;
+        for (long i = 0; i < loopCount; i++) {
             // Gọi phương thức để tạo chuỗi ngẫu nhiên với độ dài cũng ngẫu nhiên
             possibleStrings.clear(); // Xóa dữ liệu trước đó
             for (int j = 0; j < 1000; j++) {
@@ -48,12 +49,12 @@ public class Main {
 
         // Tính toán thời gian trung bình
         List<AverageTime> averageTimes = new ArrayList<>();
-        for (String method : new String[]{"Stream", "Vòng lặp"}) {
+        for (String method : new String[] { "Stream", "Vòng lặp" }) {
             long totalDuration = methodTimes.stream()
                     .filter(mt -> mt.method.equals(method))
                     .mapToLong(mt -> mt.duration)
                     .sum();
-            averageTimes.add(new AverageTime(method, totalDuration / 50)); // Tính trung bình
+            averageTimes.add(new AverageTime(method, totalDuration / loopCount)); // Tính trung bình
         }
 
         // Sắp xếp theo thời gian trung bình
@@ -68,7 +69,8 @@ public class Main {
 
     // Hàm tạo chuỗi ngẫu nhiên với độ dài cố định
     public static String generateRandomString(int length) {
-        String characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789"; // Bộ ký tự dùng để tạo chuỗi
+        String characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789"; // Bộ ký tự dùng để tạo
+                                                                                              // chuỗi
         Random random = new Random();
         StringBuilder sb = new StringBuilder(length);
 
