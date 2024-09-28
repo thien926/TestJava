@@ -16,6 +16,7 @@ Dưới đây là một số bài tập để bạn luyện tập với Stream t
 
 4. **Chuyển đổi các phần tử**
    - Viết một chương trình chuyển đổi danh sách các chuỗi thành danh sách độ dài của từng chuỗi.
+   - [Lời giải](./excercise_java_stream_methods/StringListToLengthListConverter.java)
 
 5. **Sắp xếp các chuỗi**
    - Viết một chương trình sắp xếp một danh sách các chuỗi theo thứ tự chữ cái.
