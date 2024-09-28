@@ -2,6 +2,11 @@ import java.text.NumberFormat;
 import java.util.*;
 import java.util.stream.Collectors;
 
+// Output:
+// Thời gian trung bình thực hiện:
+// Vòng lặp: 1,135,179 nanoseconds
+// Stream: 2,605,344 nanoseconds
+
 public class Main {
     public static void main(String[] args) {
         // Tạo ArrayList để lưu trữ 1000 chuỗi ngẫu nhiên
