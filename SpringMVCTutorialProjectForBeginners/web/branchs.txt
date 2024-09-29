@@ -13,5 +13,6 @@
 13.	feature/springmvc13JPQL
 14.	feature/springmvc14OneToManySpringData
 15.	feature/springmvc15CreateEvent
+16.	feature/springmvc16ListEvent
 
 xx.	feature/changeStructMapperToModelMapper
