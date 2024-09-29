@@ -59,4 +59,9 @@ public class EventServiceImpl implements EventService {
 				.map(item -> modelMapper.map(item, EventDto.class))
 				.collect(Collectors.toList());
 	}
+
+	@Override
+	public EventDto findById(Long eventId) {
+		return modelMapper.map(eventRepository.findById(eventId).orElse(null), EventDto.class);
+	}
 }

@@ -81,4 +81,13 @@ public class EventController {
 		}
 		return mav;
 	}
+	
+	@GetMapping("/events/{eventId}")
+	public ModelAndView viewEvent(@PathVariable("eventId") Long eventId
+			, ModelAndView mav) {
+		EventDto event = eventService.findById(eventId);
+		mav.addObject("event", event);
+		mav.setViewName("events/events-detail");
+		return mav;
+	}
 }
