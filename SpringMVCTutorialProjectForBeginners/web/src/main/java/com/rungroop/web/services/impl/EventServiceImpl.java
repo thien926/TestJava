@@ -1,7 +1,12 @@
 package com.rungroop.web.services.impl;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
+import org.apache.commons.lang3.StringUtils;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import com.rungroop.web.dtos.EventDto;
@@ -32,4 +37,26 @@ public class EventServiceImpl implements EventService {
 		return modelMapper.map(event, EventDto.class);
 	}
 
+	@Override
+	public List<EventDto> findAll() {
+		return eventRepository.findAll(Sort.by(Sort.Direction.ASC, "id"))
+				.stream()
+				.map(item -> modelMapper.map(item, EventDto.class))
+				.collect(Collectors.toList());
+	}
+
+	@Override
+	public List<EventDto> searchEvents(String query) {
+		if(StringUtils.isBlank(query)) {
+			return eventRepository.findAll(Sort.by(Sort.Direction.ASC, "id"))
+					.stream()
+					.map(item -> modelMapper.map(item, EventDto.class))
+					.collect(Collectors.toList());
+		}
+		
+		return eventRepository.findByNameContainingIgnoreCase(query, Sort.by(Sort.Direction.ASC, "id"))
+				.stream()
+				.map(item -> modelMapper.map(item, EventDto.class))
+				.collect(Collectors.toList());
+	}
 }
