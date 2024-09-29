@@ -10,4 +10,6 @@ public interface EventService {
 	List<EventDto> findAll();
 	
 	List<EventDto> searchEvents(String query);
+	
+	EventDto findById(Long eventId);
 }
