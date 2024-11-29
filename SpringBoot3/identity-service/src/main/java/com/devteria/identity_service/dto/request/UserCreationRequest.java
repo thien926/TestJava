@@ -15,6 +15,8 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Builder
 public class UserCreationRequest {
+	private String id;
+
 	@NotNull
 	@NotBlank
 	@Size(min = 3, message = "Username must be as least 3 characters.")

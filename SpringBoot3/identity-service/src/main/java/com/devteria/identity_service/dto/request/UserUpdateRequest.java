@@ -2,6 +2,7 @@ package com.devteria.identity_service.dto.request;
 
 import java.time.LocalDate;
 
+import jakarta.persistence.Column;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
@@ -15,6 +16,10 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Builder
 public class UserUpdateRequest {
+	private String id;
+
+	private String username;
+
 	@NotNull
 	@NotBlank
 	@Size(min = 8, message = "Password must be as least 8 characters.")
