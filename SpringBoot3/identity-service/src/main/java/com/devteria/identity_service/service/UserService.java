@@ -2,6 +2,7 @@ package com.devteria.identity_service.service;
 
 import java.util.List;
 
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -16,21 +17,17 @@ import com.devteria.identity_service.repository.UserRepository;
 public class UserService {
 	@Autowired
 	private UserRepository userRepository;
+
+	@Autowired
+	private ModelMapper modelMapper;
 	
 	// Create
 	public User createRequest(UserCreationRequest request) {
 		if(userRepository.existsByUsername(request.getUsername())) {
 			throw new AppException(ErrorCode.USER_EXISTED);
 		}
-		User user = User.builder()
-						.username(request.getUsername())
-						.password(request.getPassword())
-						.firstName(request.getFirstName())
-						.lastName(request.getLastName())
-						.dob(request.getDob())
-						.build();
-		User result = userRepository.save(user);
-		return result;
+		User user = modelMapper.map(request, User.class);
+		return userRepository.save(user);
 	}
 	
 	// Get All
@@ -46,10 +43,9 @@ public class UserService {
 	// Update
 	public User updateUser(String userId, UserUpdateRequest request) {
 		User user = getUser(userId);
-		user.setPassword(request.getPassword());
-		user.setFirstName(request.getFirstName());
-		user.setLastName(request.getLastName());
-		user.setDob(request.getDob());
+		request.setId(userId);
+		request.setUsername(user.getUsername());
+		user = modelMapper.map(request, User.class);
 		return userRepository.save(user);
 	}
 	
