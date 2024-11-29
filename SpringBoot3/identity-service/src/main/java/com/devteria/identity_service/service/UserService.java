@@ -17,6 +17,9 @@ public class UserService {
 	
 	// Create
 	public User createRequest(UserCreationRequest request) {
+		if(userRepository.existsByUsername(request.getUsername())) {
+			throw new RuntimeException("User existed.");
+		}
 		User user = User.builder()
 						.username(request.getUsername())
 						.password(request.getPassword())
