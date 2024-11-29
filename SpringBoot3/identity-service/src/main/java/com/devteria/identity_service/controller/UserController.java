@@ -18,6 +18,7 @@ import com.devteria.identity_service.dto.request.UserUpdateRequest;
 import com.devteria.identity_service.entity.User;
 import com.devteria.identity_service.service.UserService;
 
+import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 
 @RestController
@@ -29,7 +30,7 @@ public class UserController {
 	
 	@PostMapping
 	@Transactional(rollbackFor = Exception.class)
-	public User createUser(@RequestBody UserCreationRequest request) {
+	public User createUser(@RequestBody @Valid UserCreationRequest request) {
 		try {
 			User result = userService.createRequest(request);
 			return result;
@@ -51,7 +52,7 @@ public class UserController {
 	
 	@PutMapping("/{userId}")
 	@Transactional(rollbackFor = Exception.class)
-	public User updateUser(@PathVariable("userId") String userId, @RequestBody UserUpdateRequest request) {
+	public User updateUser(@PathVariable("userId") String userId, @RequestBody @Valid UserUpdateRequest request) {
 		try {
 			return userService.updateUser(userId, request);
         } catch (Exception ex) {
