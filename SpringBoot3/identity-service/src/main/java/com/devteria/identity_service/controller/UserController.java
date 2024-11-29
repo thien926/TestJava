@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.devteria.identity_service.dto.request.ApiResponse;
 import com.devteria.identity_service.dto.request.UserCreationRequest;
 import com.devteria.identity_service.dto.request.UserUpdateRequest;
 import com.devteria.identity_service.entity.User;
@@ -30,10 +31,14 @@ public class UserController {
 	
 	@PostMapping
 	@Transactional(rollbackFor = Exception.class)
-	public User createUser(@RequestBody @Valid UserCreationRequest request) {
+	public ApiResponse<User> createUser(@RequestBody @Valid UserCreationRequest request) {
 		try {
 			User result = userService.createRequest(request);
-			return result;
+			return ApiResponse.<User>builder()
+			        .code(201)
+			        .message(null)
+			        .result(result)
+			        .build();
         } catch (Exception ex) {
         	log.error("Transaction failed: " + ex.getMessage());
             throw ex;
@@ -41,20 +46,32 @@ public class UserController {
 	}
 	
 	@GetMapping
-	public List<User> getUsers() {
-		return userService.getUsers();
+	public ApiResponse<List<User>> getUsers() {
+		return ApiResponse.<List<User>>builder()
+		        .code(200)
+		        .message(null)
+		        .result(userService.getUsers())
+		        .build();
 	}
 	
 	@GetMapping("/{userId}")
-	public User getUser(@PathVariable("userId") String userId) {
-		return userService.getUser(userId);
+	public ApiResponse<User> getUser(@PathVariable("userId") String userId) {
+		return ApiResponse.<User>builder()
+		        .code(200)
+		        .message(null)
+		        .result(userService.getUser(userId))
+		        .build();
 	}
 	
 	@PutMapping("/{userId}")
 	@Transactional(rollbackFor = Exception.class)
-	public User updateUser(@PathVariable("userId") String userId, @RequestBody @Valid UserUpdateRequest request) {
+	public ApiResponse<User> updateUser(@PathVariable("userId") String userId, @RequestBody @Valid UserUpdateRequest request) {
 		try {
-			return userService.updateUser(userId, request);
+			return ApiResponse.<User>builder()
+			        .code(200)
+			        .message(null)
+			        .result(userService.updateUser(userId, request))
+			        .build();
         } catch (Exception ex) {
         	log.error("Transaction failed: " + ex.getMessage());
             throw ex;
@@ -63,10 +80,14 @@ public class UserController {
 	
 	@DeleteMapping("/{userId}")
 	@Transactional(rollbackFor = Exception.class)
-	public String deleteUser(@PathVariable("userId") String userId) {
+	public ApiResponse<String> deleteUser(@PathVariable("userId") String userId) {
 		try {
 			userService.deleteUser(userId);
-			return "Delete success";
+			return ApiResponse.<String>builder()
+			        .code(200)
+			        .message(null)
+			        .result("Delete success")
+			        .build();
         } catch (Exception ex) {
         	log.error("Transaction failed: " + ex.getMessage());
             throw ex;
