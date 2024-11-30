@@ -4,6 +4,8 @@ import java.util.List;
 
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import com.devteria.identity_service.dto.request.UserCreationRequest;
@@ -27,6 +29,8 @@ public class UserService {
 			throw new AppException(ErrorCode.USER_EXISTED);
 		}
 		User user = modelMapper.map(request, User.class);
+		PasswordEncoder passwordEncoder = new BCryptPasswordEncoder(10);
+		user.setPassword(passwordEncoder.encode(request.getPassword()));
 		return userRepository.save(user);
 	}
 	
