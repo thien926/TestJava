@@ -13,7 +13,6 @@ import com.nimbusds.jose.JWSAlgorithm;
 import com.nimbusds.jose.JWSHeader;
 import com.nimbusds.jose.JWSObject;
 import com.nimbusds.jose.JWSVerifier;
-import com.nimbusds.jose.KeyLengthException;
 import com.nimbusds.jose.Payload;
 import com.nimbusds.jose.crypto.MACSigner;
 import com.nimbusds.jose.crypto.MACVerifier;
@@ -25,9 +24,11 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
 
 import java.text.ParseException;
 import java.util.Date;
+import java.util.StringJoiner;
 
 @Slf4j
 @Service
@@ -38,45 +39,98 @@ public class AuthenticationService {
     @Value("${jwt.signerKey}")
     protected String SIGNER_KEY;
 
+    @Autowired
+    private PasswordEncoder passwordEncoder;
+
+    /**
+     * Xác thực token thông qua introspect.
+     *
+     * @param request Yêu cầu introspect chứa token cần xác thực
+     * @return Kết quả xác thực với thông tin hợp lệ
+     * @throws ParseException Nếu token không thể phân tích cú pháp
+     * @throws JOSEException Nếu lỗi xảy ra trong quá trình xác thực token
+     */
     public IntrospectResponse introspect(IntrospectRequest request) throws ParseException, JOSEException {
+        // Tạo verifier từ khóa ký
         JWSVerifier verifier = new MACVerifier(SIGNER_KEY.getBytes());
+
+        // Phân tích token
         SignedJWT signedJWT = SignedJWT.parse(request.getToken());
         Date expiredTime = signedJWT.getJWTClaimsSet().getExpirationTime();
-        boolean result = signedJWT.verify(verifier);
+
+        // Xác thực token và kiểm tra thời hạn
+        boolean isValid = signedJWT.verify(verifier) && expiredTime.after(new Date());
         return IntrospectResponse.builder()
-                .valid(result && expiredTime.after(new Date()))
+                .valid(isValid)
                 .build();
     }
 
+    /**
+     * Xác thực thông tin đăng nhập và tạo JWT token.
+     *
+     * @param authenticationRequest Yêu cầu xác thực với thông tin username và password
+     * @return Kết quả xác thực và token
+     */
     public AuthenticationResponse authenticate(AuthenticationRequest authenticationRequest) {
+        // Tìm người dùng theo username
         User user = userRepository.findByUsername(authenticationRequest.getUsername())
                 .orElseThrow(() -> new RuntimeException("User not found"));
-        PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
+
+        // Kiểm tra mật khẩu
         boolean authenticated = passwordEncoder.matches(authenticationRequest.getPassword(), user.getPassword());
         if(!authenticated) {
             throw new AppException(ErrorCode.UNAUTHENTICATED);
         }
-        String token = generateToken(authenticationRequest.getUsername());
+
+        // Tạo token JWT
+        String token = generateToken(user);
         return AuthenticationResponse.builder().token(token).authenticated(authenticated).build();
     }
 
-    private String generateToken(String username) {
+    /**
+     * Tạo JWT token cho người dùng.
+     *
+     * @param user Đối tượng người dùng
+     * @return Chuỗi token đã ký
+     */
+    private String generateToken(User user) {
+        // Tạo header JWT với thuật toán HS512
         JWSHeader jwsHeader = new JWSHeader(JWSAlgorithm.HS512);
+
+        // Tạo claims với thông tin người dùng
         JWTClaimsSet jwtClaimsSet = new JWTClaimsSet.Builder()
-                .subject(username)
-                .issuer("devteria.com")
-                .issueTime(new Date())
-                .expirationTime(new Date(new Date().getTime() + 1000 * 60 * 60 * 24))
-                .claim("customClaim", "Custom")
+                .subject(user.getUsername())
+                .issuer("devteria.com") // Định danh nhà phát hành token
+                .issueTime(new Date()) // Thời gian phát hành
+                .expirationTime(new Date(new Date().getTime() + 1000 * 60 * 60 * 24)) // Thời gian hết hạn: 1 ngày
+                .claim("scope", buildScope(user)) // Thêm các quyền của người dùng
                 .build();
+
+        // Tạo payload và ký token
         Payload payload = new Payload(jwtClaimsSet.toJSONObject());
         JWSObject jwsObject = new JWSObject(jwsHeader, payload);
         try {
             jwsObject.sign(new MACSigner(SIGNER_KEY.getBytes()));
+            // Trả về token đã ký
             return jwsObject.serialize();
         } catch (JOSEException e) {
             log.error("Cannot generate token", e);
             throw new RuntimeException(e);
         }
+    }
+
+    /**
+     * Tạo danh sách quyền (scope) cho người dùng.
+     *
+     * @param user Đối tượng người dùng
+     * @return Chuỗi scope phân cách bởi khoảng trắng
+     */
+    private String buildScope(User user) {
+        // Sử dụng StringJoiner để xây dựng danh sách quyền
+        StringJoiner stringJoiner = new StringJoiner(" ");
+        if(!CollectionUtils.isEmpty(user.getRoles())) {
+            user.getRoles().forEach(stringJoiner::add);
+        }
+        return stringJoiner.toString();
     }
 }
