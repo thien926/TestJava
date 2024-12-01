@@ -1,7 +1,5 @@
 package com.devteria.identity_service.entity;
 
-import java.time.LocalDate;
-
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -11,6 +9,9 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+
+import java.time.LocalDate;
+import java.util.Set;
 
 @Entity
 @Data
@@ -33,4 +34,6 @@ public class User {
 	private String lastName;
 	
 	private LocalDate dob;
+
+	private Set<String> roles;
 }

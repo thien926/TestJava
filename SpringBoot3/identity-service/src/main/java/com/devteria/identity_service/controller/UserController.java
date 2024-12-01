@@ -2,7 +2,9 @@ package com.devteria.identity_service.controller;
 
 import java.util.List;
 
+import com.devteria.identity_service.dto.response.UserResponse;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -31,10 +33,10 @@ public class UserController {
 	
 	@PostMapping
 	@Transactional(rollbackFor = Exception.class)
-	public ApiResponse<User> createUser(@RequestBody @Valid UserCreationRequest request) {
+	public ApiResponse<UserResponse> createUser(@RequestBody @Valid UserCreationRequest request) {
 		try {
-			User result = userService.createRequest(request);
-			return ApiResponse.<User>builder()
+			UserResponse result = userService.createRequest(request);
+			return ApiResponse.<UserResponse>builder()
 			        .code(201)
 			        .message(null)
 			        .result(result)
@@ -46,8 +48,12 @@ public class UserController {
 	}
 	
 	@GetMapping
-	public ApiResponse<List<User>> getUsers() {
-		return ApiResponse.<List<User>>builder()
+	public ApiResponse<List<UserResponse>> getUsers() {
+		var authentication = SecurityContextHolder.getContext().getAuthentication();
+		log.info("Username: " + authentication.getName());
+		authentication.getAuthorities().forEach(grantedAuthority -> log.info("GrantedAuthority: " + grantedAuthority));
+
+		return ApiResponse.<List<UserResponse>>builder()
 		        .code(200)
 		        .message(null)
 		        .result(userService.getUsers())

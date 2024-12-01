@@ -1,5 +1,6 @@
 package com.devteria.identity_service.configuration;
 
+import com.devteria.identity_service.enums.Role;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -7,69 +8,119 @@ import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.oauth2.jose.jws.MacAlgorithm;
 import org.springframework.security.oauth2.jwt.JwtDecoder;
 import org.springframework.security.oauth2.jwt.NimbusJwtDecoder;
+import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationConverter;
+import org.springframework.security.oauth2.server.resource.authentication.JwtGrantedAuthoritiesConverter;
 import org.springframework.security.web.SecurityFilterChain;
 
 import javax.crypto.spec.SecretKeySpec;
 
-// Đánh dấu class là một class cấu hình bảo mật
+/**
+ * SecurityConfig là lớp cấu hình bảo mật cho ứng dụng.
+ * Được sử dụng để thiết lập các quy tắc bảo mật, xử lý xác thực JWT, và định nghĩa mã hóa mật khẩu.
+ */
 @Configuration
-@EnableWebSecurity // Kích hoạt bảo mật Web với Spring Security
+@EnableWebSecurity // Kích hoạt tính năng bảo mật của Spring Security
 public class SecurityConfig {
 
-    // Danh sách các endpoint cho phép truy cập công khai với phương thức POST
-    private final String[] PUBLIC_POST_URLS = {
+    // Các endpoint cho phép truy cập công khai với phương thức POST
+    private static final String[] PUBLIC_POST_URLS = {
             "/users",
             "/auth/login",
             "/auth/introspect"
     };
 
-    protected final String jwtAlgorithm = "HS512";
+    // Các endpoint yêu cầu quyền ROLE_ADMIN để truy cập với phương thức GET
+    private static final String[] ROLE_ADMIN_GET_URLS = {
+            "/users"
+    };
 
-    // Lấy giá trị SIGNER_KEY từ file cấu hình (application.properties hoặc application.yml)
+    // Thuật toán HMAC-SHA512 để mã hóa JWT
+    private static final String JWT_ALGORITHM = "HS512";
+
+    // Khóa ký JWT được cấu hình trong file application.properties hoặc application.yml
     @Value("${jwt.signerKey}")
-    private String SIGNER_KEY;
+    private String signerKey;
 
-    // Cấu hình SecurityFilterChain để thiết lập các quy tắc bảo mật
+    /**
+     * Cấu hình SecurityFilterChain để thiết lập các quy tắc bảo mật.
+     *
+     * @param http HttpSecurity để định nghĩa các quy tắc bảo mật
+     * @return SecurityFilterChain đã được cấu hình
+     * @throws Exception nếu có lỗi xảy ra trong quá trình cấu hình
+     */
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
-                // Tắt bảo vệ CSRF (thường được tắt khi sử dụng API REST)
-                .csrf(AbstractHttpConfigurer::disable)
-                // Định nghĩa các quy tắc ủy quyền
-                .authorizeHttpRequests(authorizeRequests -> authorizeRequests
-                        // Cho phép truy cập công khai với phương thức POST tại các URL trong PUBLIC_POST_URLS
+                .csrf(AbstractHttpConfigurer::disable) // Tắt bảo vệ CSRF cho API REST
+                .authorizeHttpRequests(auth -> auth
+                        // Các endpoint công khai với phương thức POST
                         .requestMatchers(HttpMethod.POST, PUBLIC_POST_URLS).permitAll()
-                        // Tất cả các request khác đều yêu cầu xác thực
+                        // Các endpoint chỉ cho phép ROLE_ADMIN với phương thức GET
+                        .requestMatchers(HttpMethod.GET, ROLE_ADMIN_GET_URLS).hasRole(Role.ADMIN.name())
+//                        .requestMatchers(HttpMethod.GET, ROLE_ADMIN_GET_URLS).hasAuthority("ROLE_ADMIN")
+                        // Tất cả các request khác yêu cầu xác thực
                         .anyRequest().authenticated()
+                )
+                .oauth2ResourceServer(oauth2 -> oauth2
+                        .jwt(jwt -> jwt
+                                .decoder(jwtDecoder()) // Giải mã JWT
+                                .jwtAuthenticationConverter(jwtAuthenticationConverter()) // Chuyển đổi JWT sang quyền
+                        )
                 );
-        // Cấu hình Resource Server để sử dụng OAuth2 và JWT
-        http.oauth2ResourceServer(oauth2 -> oauth2
-                // Sử dụng decoder được định nghĩa trong phương thức jwtDecoder()
-                .jwt(jwtConfigurer -> jwtConfigurer.decoder(jwtDecoder()))
-        );
-        // Trả về SecurityFilterChain đã được cấu hình
-        return http.build();
+
+        return http.build(); // Trả về cấu hình bảo mật
     }
 
-    // Định nghĩa JwtDecoder để giải mã và xác thực token
+    /**
+     * Chuyển đổi JWT thành quyền sử dụng JwtAuthenticationConverter.
+     *
+     * @return JwtAuthenticationConverter đã được cấu hình
+     */
+    @Bean
+    public JwtAuthenticationConverter jwtAuthenticationConverter() {
+        JwtGrantedAuthoritiesConverter authoritiesConverter = new JwtGrantedAuthoritiesConverter();
+        authoritiesConverter.setAuthorityPrefix("ROLE_"); // Thêm tiền tố ROLE_ cho các quyền (SCOPE_ -> ROLE_)
+
+        JwtAuthenticationConverter authenticationConverter = new JwtAuthenticationConverter();
+        authenticationConverter.setJwtGrantedAuthoritiesConverter(authoritiesConverter);
+
+        return authenticationConverter;
+    }
+
+    /**
+     * Định nghĩa JwtDecoder để giải mã và xác thực token JWT.
+     *
+     * @return JwtDecoder được cấu hình với khóa ký và thuật toán mã hóa
+     */
     @Bean
     public JwtDecoder jwtDecoder() {
-        // Kiểm tra SIGNER_KEY
-        if (SIGNER_KEY == null || SIGNER_KEY.isEmpty()) {
+        // Kiểm tra tính hợp lệ của signerKey
+        if (signerKey == null || signerKey.isEmpty()) {
             throw new IllegalStateException("JWT signer key must be provided!");
         }
 
-        // Tạo khóa bí mật (SecretKeySpec) từ SIGNER_KEY
-        SecretKeySpec secretKeySpec = new SecretKeySpec(SIGNER_KEY.getBytes(), jwtAlgorithm);
-        MacAlgorithm macAlgorithm = MacAlgorithm.from(jwtAlgorithm);
-        // Sử dụng NimbusJwtDecoder để giải mã JWT với thuật toán HS512
+        // Tạo SecretKeySpec từ signerKey
+        SecretKeySpec secretKeySpec = new SecretKeySpec(signerKey.getBytes(), JWT_ALGORITHM);
+
         return NimbusJwtDecoder
-                .withSecretKey(secretKeySpec)
-                .macAlgorithm(macAlgorithm) // Thuật toán ký token HMAC-SHA512
+                .withSecretKey(secretKeySpec) // Sử dụng SecretKeySpec cho JWT
+                .macAlgorithm(MacAlgorithm.from(JWT_ALGORITHM)) // Thuật toán HMAC-SHA512
 //                .macAlgorithm(MacAlgorithm.HS512)
                 .build();
+    }
+
+    /**
+     * Định nghĩa PasswordEncoder sử dụng thuật toán BCrypt để mã hóa mật khẩu.
+     *
+     * @return PasswordEncoder sử dụng BCrypt
+     */
+    @Bean
+    public PasswordEncoder passwordEncoder() {
+        return new BCryptPasswordEncoder(10); // Mã hóa với độ mạnh 10
     }
 }
