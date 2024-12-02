@@ -104,6 +104,7 @@ public class AuthenticationService {
                 .issueTime(new Date()) // Thời gian phát hành
                 .expirationTime(new Date(new Date().getTime() + 1000 * 60 * 60 * 24)) // Thời gian hết hạn: 1 ngày
                 .claim("scope", buildScope(user)) // Thêm các quyền của người dùng
+                .claim("userId", user.getId()) // Thêm Id của user
                 .build();
 
         // Tạo payload và ký token
