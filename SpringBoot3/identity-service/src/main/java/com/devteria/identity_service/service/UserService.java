@@ -8,16 +8,26 @@ import com.devteria.identity_service.enums.Role;
 import com.devteria.identity_service.exception.AppException;
 import com.devteria.identity_service.exception.ErrorCode;
 import com.devteria.identity_service.repository.UserRepository;
+
+import lombok.extern.slf4j.Slf4j;
+
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PostAuthorize;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.stereotype.Service;
 
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @Service
+@Slf4j
 public class UserService {
     @Autowired
     PasswordEncoder passwordEncoder;
@@ -38,6 +48,17 @@ public class UserService {
         user.setRoles(roles);
         return modelMapper.map(userRepository.save(user), UserResponse.class);
     }
+    
+    public UserResponse getMyInfo() {
+    	SecurityContext context = SecurityContextHolder.getContext();
+    	String username = context.getAuthentication().getName();
+    	
+    	Jwt jwt = (Jwt) context.getAuthentication().getPrincipal();
+        String userId = jwt.getClaimAsString("userId");
+        log.info("getMyInfo : " + userId);
+    	
+    	return modelMapper.map(userRepository.findByUsername(username).orElseThrow(() -> new RuntimeException("User Not Found")), UserResponse.class);
+    }
 
     // Get All
     public List<UserResponse> getUsers() {
@@ -45,6 +66,10 @@ public class UserService {
     }
 
     // Get One
+    // Nếu 'userId' trong JWT claims bằng 'id' thì người dùng có quyền truy cập phương thức này.
+//    @PreAuthorize("principal.claims['userId'] == #id") 
+    // Kiểm tra xem tên người dùng trong đối tượng trả về có trùng với tên người dùng hiện tại (authentication.name) hay không.
+    @PostAuthorize("returnObject.username == authentication.name")
     public User getUser(String id) {
         return userRepository.findById(id).orElseThrow(() -> new RuntimeException("User Not Found"));
     }
