@@ -1,29 +1,28 @@
 package com.devteria.identity_service.exception;
 
+import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
+
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+
+@Getter
+@AllArgsConstructor
+@NoArgsConstructor
 public enum ErrorCode {
-	UNCATEGORIZED_EXCEPTION(9999, "Uncategorized error"),
-    USER_EXISTED(400, "User existed"),
-	UNAUTHENTICATED(401, "UnAuthenticated")
+	UNCATEGORIZED_EXCEPTION(9999, "Uncategorized error", HttpStatus.INTERNAL_SERVER_ERROR),
+    USER_EXISTED(400, "User existed", HttpStatus.BAD_REQUEST),
+	UNAUTHENTICATED(401, "UnAuthenticated", HttpStatus.UNAUTHORIZED),
+	UNAUTHORIZEED(403, "Access denied", HttpStatus.FORBIDDEN)
     ;
-	
-	private ErrorCode(int code, String message) {
-		this.code = code;
-		this.message = message;
-	}
 	
 	private int code;
 	private String message;
-	
-	public int getCode() {
-		return code;
-	}
+	private HttpStatusCode statusCode;
 	
 	public void setCode(int code) {
 		this.code = code;
-	}
-	
-	public String getMessage() {
-		return message;
 	}
 	
 	public void setMessage(String message) {

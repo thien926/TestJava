@@ -49,6 +49,7 @@ public class UserController {
 	}
 	
 	@GetMapping
+	@PreAuthorize("hasRole('ADMIN')")
 	public ApiResponse<List<UserResponse>> getUsers() {
 		var authentication = SecurityContextHolder.getContext().getAuthentication();
 		log.info("Username: " + authentication.getName());

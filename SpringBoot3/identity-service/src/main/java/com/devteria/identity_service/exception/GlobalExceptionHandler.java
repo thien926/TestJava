@@ -2,6 +2,7 @@ package com.devteria.identity_service.exception;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -24,7 +25,17 @@ public class GlobalExceptionHandler {
 	@ExceptionHandler(value = AppException.class)
 	ResponseEntity<ApiResponse<Object>> handlingAppException(AppException exception) {
 		ErrorCode errorCode = exception.getErrorCode();
-		return ResponseEntity.badRequest().body(ApiResponse.builder()
+		return ResponseEntity.status(errorCode.getStatusCode()).body(ApiResponse.builder()
+		        .code(errorCode.getCode())
+		        .message(errorCode.getMessage())
+		        .result(null)
+		        .build());
+	}
+	
+	@ExceptionHandler(value = AccessDeniedException.class)
+	ResponseEntity<ApiResponse<Object>> handlingAccessDeniedException(AccessDeniedException accessDeniedException) {
+		ErrorCode errorCode = ErrorCode.UNAUTHORIZEED;
+		return ResponseEntity.status(errorCode.getStatusCode()).body(ApiResponse.builder()
 		        .code(errorCode.getCode())
 		        .message(errorCode.getMessage())
 		        .result(null)
