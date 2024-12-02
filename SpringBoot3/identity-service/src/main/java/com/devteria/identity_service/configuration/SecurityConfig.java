@@ -63,7 +63,7 @@ public class SecurityConfig {
                         // Các endpoint công khai với phương thức POST
                         .requestMatchers(HttpMethod.POST, PUBLIC_POST_URLS).permitAll()
                         // Các endpoint chỉ cho phép ROLE_ADMIN với phương thức GET
-                        .requestMatchers(HttpMethod.GET, ROLE_ADMIN_GET_URLS).hasRole(Role.ADMIN.name())
+                //        .requestMatchers(HttpMethod.GET, ROLE_ADMIN_GET_URLS).hasRole(Role.ADMIN.name())
 //                        .requestMatchers(HttpMethod.GET, ROLE_ADMIN_GET_URLS).hasAuthority("ROLE_ADMIN")
                         // Tất cả các request khác yêu cầu xác thực
                         .anyRequest().authenticated()
@@ -73,6 +73,7 @@ public class SecurityConfig {
                                 .decoder(jwtDecoder()) // Giải mã JWT
                                 .jwtAuthenticationConverter(jwtAuthenticationConverter()) // Chuyển đổi JWT sang quyền
                         )
+                        .authenticationEntryPoint(new JwtAuthenticationEntrypoint())
                 );
 
         return http.build(); // Trả về cấu hình bảo mật
