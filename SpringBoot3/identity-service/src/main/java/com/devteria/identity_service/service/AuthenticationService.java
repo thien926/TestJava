@@ -4,6 +4,7 @@ import com.devteria.identity_service.dto.request.AuthenticationRequest;
 import com.devteria.identity_service.dto.request.IntrospectRequest;
 import com.devteria.identity_service.dto.response.AuthenticationResponse;
 import com.devteria.identity_service.dto.response.IntrospectResponse;
+import com.devteria.identity_service.entity.Role;
 import com.devteria.identity_service.entity.User;
 import com.devteria.identity_service.exception.AppException;
 import com.devteria.identity_service.exception.ErrorCode;
@@ -130,7 +131,9 @@ public class AuthenticationService {
         // Sử dụng StringJoiner để xây dựng danh sách quyền
         StringJoiner stringJoiner = new StringJoiner(" ");
         if(!CollectionUtils.isEmpty(user.getRoles())) {
-            user.getRoles().forEach(stringJoiner::add);
+            user.getRoles().stream()
+                    .map(Role::getName)
+                    .forEach(stringJoiner::add);
         }
         return stringJoiner.toString();
     }

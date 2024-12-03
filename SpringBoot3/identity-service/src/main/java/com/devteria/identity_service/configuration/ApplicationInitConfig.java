@@ -42,7 +42,7 @@ public class ApplicationInitConfig {
                 User user = User.builder()
                         .username("admin")                             // Tên người dùng mặc định.
                         .password(passwordEncoder.encode("admin"))    // Mã hóa mật khẩu.
-                        .roles(roles)                                 // Gán vai trò ADMIN.
+//                        .roles(roles)                                 // Gán vai trò ADMIN.
                         .build();
 
                 // Lưu người dùng vào cơ sở dữ liệu.
