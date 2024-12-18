@@ -7,6 +7,7 @@ import com.devteria.identity_service.entity.User;
 import com.devteria.identity_service.enums.Role;
 import com.devteria.identity_service.exception.AppException;
 import com.devteria.identity_service.exception.ErrorCode;
+import com.devteria.identity_service.repository.RoleRepository;
 import com.devteria.identity_service.repository.UserRepository;
 
 import lombok.extern.slf4j.Slf4j;
@@ -31,10 +32,15 @@ import java.util.stream.Collectors;
 public class UserService {
     @Autowired
     PasswordEncoder passwordEncoder;
+
     @Autowired
     private UserRepository userRepository;
+
     @Autowired
     private ModelMapper modelMapper;
+
+    @Autowired
+    private RoleRepository roleRepository;
 
     // Create
     public UserResponse createRequest(UserCreationRequest request) {
@@ -80,6 +86,10 @@ public class UserService {
         request.setId(userId);
         request.setUsername(user.getUsername());
         user = modelMapper.map(request, User.class);
+        user.setPassword(passwordEncoder.encode(request.getPassword()));
+
+        List<com.devteria.identity_service.entity.Role> roles = roleRepository.findAllById(request.getRoles());
+        user.setRoles(roles);
         return userRepository.save(user);
     }
 

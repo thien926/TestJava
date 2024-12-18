@@ -73,6 +73,7 @@ public class UserController {
 	}
 	
 	@PutMapping("/{userId}")
+	@PreAuthorize("hasAnyRole('ADMIN', 'USER')")
 	@Transactional(rollbackFor = Exception.class)
 	public ApiResponse<User> updateUser(@PathVariable("userId") String userId, @RequestBody @Valid UserUpdateRequest request) {
 		try {
