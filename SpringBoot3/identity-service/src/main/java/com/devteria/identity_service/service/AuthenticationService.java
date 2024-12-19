@@ -131,9 +131,15 @@ public class AuthenticationService {
         // Sử dụng StringJoiner để xây dựng danh sách quyền
         StringJoiner stringJoiner = new StringJoiner(" ");
         if(!CollectionUtils.isEmpty(user.getRoles())) {
-            user.getRoles().stream()
-                    .map(Role::getName)
-                    .forEach(stringJoiner::add);
+            user.getRoles().forEach(role -> {
+                String roleName = role.getName();
+                stringJoiner.add("ROLE_" + roleName);
+                if(!CollectionUtils.isEmpty(role.getPermissions())) {
+                    role.getPermissions().forEach(permission -> {
+                        stringJoiner.add(roleName + "_" + permission.getName());
+                    });
+                }
+            });
         }
         return stringJoiner.toString();
     }

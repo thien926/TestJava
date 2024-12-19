@@ -1,6 +1,7 @@
 package com.devteria.identity_service.dto.request;
 
 import java.time.LocalDate;
+import java.util.List;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -32,4 +33,6 @@ public class UserCreationRequest {
 	private String lastName;
 	
 	private LocalDate dob;
+
+	private List<String> roles;
 }

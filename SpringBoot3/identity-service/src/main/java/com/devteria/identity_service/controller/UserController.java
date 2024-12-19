@@ -1,7 +1,13 @@
 package com.devteria.identity_service.controller;
 
-import java.util.List;
-
+import com.devteria.identity_service.dto.request.ApiResponse;
+import com.devteria.identity_service.dto.request.UserCreationRequest;
+import com.devteria.identity_service.dto.request.UserUpdateRequest;
+import com.devteria.identity_service.dto.response.UserResponse;
+import com.devteria.identity_service.entity.User;
+import com.devteria.identity_service.service.UserService;
+import jakarta.validation.Valid;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -15,15 +21,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.devteria.identity_service.dto.request.ApiResponse;
-import com.devteria.identity_service.dto.request.UserCreationRequest;
-import com.devteria.identity_service.dto.request.UserUpdateRequest;
-import com.devteria.identity_service.dto.response.UserResponse;
-import com.devteria.identity_service.entity.User;
-import com.devteria.identity_service.service.UserService;
-
-import jakarta.validation.Valid;
-import lombok.extern.slf4j.Slf4j;
+import java.util.List;
 
 @RestController
 @Slf4j
@@ -34,6 +32,7 @@ public class UserController {
 	
 	@PostMapping
 	@Transactional(rollbackFor = Exception.class)
+	@PreAuthorize("hasRole('ADMIN') and hasAuthority('ADMIN_CREATE_DATA')")
 	public ApiResponse<UserResponse> createUser(@RequestBody @Valid UserCreationRequest request) {
 		try {
 			UserResponse result = userService.createRequest(request);
@@ -73,6 +72,7 @@ public class UserController {
 	}
 	
 	@PutMapping("/{userId}")
+	@PreAuthorize("hasAnyRole('ADMIN', 'USER')")
 	@Transactional(rollbackFor = Exception.class)
 	public ApiResponse<User> updateUser(@PathVariable("userId") String userId, @RequestBody @Valid UserUpdateRequest request) {
 		try {
