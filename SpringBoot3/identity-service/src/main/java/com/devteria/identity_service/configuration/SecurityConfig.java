@@ -31,7 +31,7 @@ public class SecurityConfig {
 
     // Các endpoint cho phép truy cập công khai với phương thức POST
     private static final String[] PUBLIC_POST_URLS = {
-            "/users",
+//            "/users",
             "/auth/login",
             "/auth/introspect"
     };
@@ -87,7 +87,8 @@ public class SecurityConfig {
     @Bean
     public JwtAuthenticationConverter jwtAuthenticationConverter() {
         JwtGrantedAuthoritiesConverter authoritiesConverter = new JwtGrantedAuthoritiesConverter();
-        authoritiesConverter.setAuthorityPrefix("ROLE_"); // Thêm tiền tố ROLE_ cho các quyền (SCOPE_ -> ROLE_)
+//        authoritiesConverter.setAuthorityPrefix("ROLE_"); // Thêm tiền tố ROLE_ cho các quyền (SCOPE_ -> ROLE_)
+        authoritiesConverter.setAuthorityPrefix("");
 
         JwtAuthenticationConverter authenticationConverter = new JwtAuthenticationConverter();
         authenticationConverter.setJwtGrantedAuthoritiesConverter(authoritiesConverter);

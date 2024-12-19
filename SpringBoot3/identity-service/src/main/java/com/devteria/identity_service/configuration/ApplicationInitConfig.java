@@ -1,7 +1,10 @@
 package com.devteria.identity_service.configuration;
 
+import com.devteria.identity_service.entity.Permission;
+import com.devteria.identity_service.entity.Role;
 import com.devteria.identity_service.entity.User;
-import com.devteria.identity_service.enums.Role;
+import com.devteria.identity_service.repository.PermissionRepository;
+import com.devteria.identity_service.repository.RoleRepository;
 import com.devteria.identity_service.repository.UserRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,6 +13,8 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Set;
 
 /**
@@ -31,18 +36,46 @@ public class ApplicationInitConfig {
      * @return ApplicationRunner để kiểm tra và khởi tạo dữ liệu.
      */
     @Bean
-    public ApplicationRunner applicationRunner(UserRepository userRepository) {
+    public ApplicationRunner applicationRunner(UserRepository userRepository, RoleRepository roleRepository, PermissionRepository permissionRepository) {
         return args -> {
+            List<String> perList = List.of("CREATE_DATA", "READ_DATA", "UPDATE_DATA", "DELETE_DATA");
+            List<Permission> permissionList = permissionRepository.findAllById(perList);
+            if(permissionList.size() < perList.size()) {
+                List<String> existingPermissions = permissionList.stream()
+                        .map(Permission::getName) // Lấy tên các Permission đã có
+                        .toList();
+                List<Permission> missingPermissions = perList.stream()
+                        .filter(permission -> !existingPermissions.contains(permission)) // Lọc ra những Permission chưa có
+                        .map(permission -> {
+                            return Permission.builder()
+                                    .name(permission)
+                                    .description(permission + " permission")
+                                    .build();
+                        }) // Tạo các đối tượng Permission mới
+                        .toList();
+                permissionRepository.saveAll(missingPermissions);
+            }
+
+            if(!roleRepository.findById("ADMIN").isPresent()) {
+                permissionList = permissionRepository.findAllById(perList);
+                Role role = Role.builder()
+                        .name("ADMIN")
+                        .description("Admin Role")
+                        .permissions(permissionList)
+                        .build();
+                roleRepository.save(role);
+            }
             // Kiểm tra nếu người dùng 'admin' chưa tồn tại.
             if (!userRepository.findByUsername("admin").isPresent()) {
                 // Tạo danh sách vai trò (Set<String>) cho người dùng.
-                Set<String> roles = Set.of(Role.ADMIN.name());
+//                Set<String> roles = Set.of(Role.ADMIN.name());
+                List<Role> roles = roleRepository.findAllById(List.of("ADMIN"));
 
                 // Xây dựng đối tượng User với thông tin mặc định.
                 User user = User.builder()
                         .username("admin")                             // Tên người dùng mặc định.
                         .password(passwordEncoder.encode("admin"))    // Mã hóa mật khẩu.
-//                        .roles(roles)                                 // Gán vai trò ADMIN.
+                        .roles(roles)                                 // Gán vai trò ADMIN.
                         .build();
 
                 // Lưu người dùng vào cơ sở dữ liệu.
