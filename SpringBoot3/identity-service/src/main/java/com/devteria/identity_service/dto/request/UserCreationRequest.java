@@ -33,7 +33,7 @@ public class UserCreationRequest {
 	
 	private String lastName;
 
-	@DobConstraint(min = 2)
+	@DobConstraint(min = 2, message = "At least 2 years old")
 	private LocalDate dob;
 
 	private List<String> roles;

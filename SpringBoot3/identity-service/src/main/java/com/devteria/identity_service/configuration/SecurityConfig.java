@@ -1,6 +1,7 @@
 package com.devteria.identity_service.configuration;
 
 import com.devteria.identity_service.enums.Role;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -33,7 +34,8 @@ public class SecurityConfig {
     private static final String[] PUBLIC_POST_URLS = {
 //            "/users",
             "/auth/login",
-            "/auth/introspect"
+            "/auth/introspect",
+            "/auth/logout",
     };
 
     // Các endpoint yêu cầu quyền ROLE_ADMIN để truy cập với phương thức GET
@@ -45,8 +47,11 @@ public class SecurityConfig {
     private static final String JWT_ALGORITHM = "HS512";
 
     // Khóa ký JWT được cấu hình trong file application.properties hoặc application.yml
-    @Value("${jwt.signerKey}")
-    private String signerKey;
+//    @Value("${jwt.signerKey}")
+//    private String signerKey;
+
+    @Autowired
+    private CustomJwtDecoder customJwtDecoder;
 
     /**
      * Cấu hình SecurityFilterChain để thiết lập các quy tắc bảo mật.
@@ -70,7 +75,8 @@ public class SecurityConfig {
                 )
                 .oauth2ResourceServer(oauth2 -> oauth2
                         .jwt(jwt -> jwt
-                                .decoder(jwtDecoder()) // Giải mã JWT
+                                        .decoder(customJwtDecoder)
+//                                .decoder(jwtDecoder()) // Giải mã JWT
                                 .jwtAuthenticationConverter(jwtAuthenticationConverter()) // Chuyển đổi JWT sang quyền
                         )
                         .authenticationEntryPoint(new JwtAuthenticationEntrypoint())
@@ -97,28 +103,6 @@ public class SecurityConfig {
     }
 
     /**
-     * Định nghĩa JwtDecoder để giải mã và xác thực token JWT.
-     *
-     * @return JwtDecoder được cấu hình với khóa ký và thuật toán mã hóa
-     */
-    @Bean
-    public JwtDecoder jwtDecoder() {
-        // Kiểm tra tính hợp lệ của signerKey
-        if (signerKey == null || signerKey.isEmpty()) {
-            throw new IllegalStateException("JWT signer key must be provided!");
-        }
-
-        // Tạo SecretKeySpec từ signerKey
-        SecretKeySpec secretKeySpec = new SecretKeySpec(signerKey.getBytes(), JWT_ALGORITHM);
-
-        return NimbusJwtDecoder
-                .withSecretKey(secretKeySpec) // Sử dụng SecretKeySpec cho JWT
-                .macAlgorithm(MacAlgorithm.from(JWT_ALGORITHM)) // Thuật toán HMAC-SHA512
-//                .macAlgorithm(MacAlgorithm.HS512)
-                .build();
-    }
-
-    /**
      * Định nghĩa PasswordEncoder sử dụng thuật toán BCrypt để mã hóa mật khẩu.
      *
      * @return PasswordEncoder sử dụng BCrypt
@@ -127,4 +111,26 @@ public class SecurityConfig {
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder(10); // Mã hóa với độ mạnh 10
     }
+
+    /**
+     * Định nghĩa JwtDecoder để giải mã và xác thực token JWT.
+     *
+     * @return JwtDecoder được cấu hình với khóa ký và thuật toán mã hóa
+     */
+//    @Bean
+//    public JwtDecoder jwtDecoder() {
+//        // Kiểm tra tính hợp lệ của signerKey
+//        if (signerKey == null || signerKey.isEmpty()) {
+//            throw new IllegalStateException("JWT signer key must be provided!");
+//        }
+//
+//        // Tạo SecretKeySpec từ signerKey
+//        SecretKeySpec secretKeySpec = new SecretKeySpec(signerKey.getBytes(), JWT_ALGORITHM);
+//
+//        return NimbusJwtDecoder
+//                .withSecretKey(secretKeySpec) // Sử dụng SecretKeySpec cho JWT
+//                .macAlgorithm(MacAlgorithm.from(JWT_ALGORITHM)) // Thuật toán HMAC-SHA512
+////                .macAlgorithm(MacAlgorithm.HS512)
+//                .build();
+//    }
 }

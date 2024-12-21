@@ -2,12 +2,15 @@ package com.devteria.identity_service.service;
 
 import com.devteria.identity_service.dto.request.AuthenticationRequest;
 import com.devteria.identity_service.dto.request.IntrospectRequest;
+import com.devteria.identity_service.dto.request.LogoutRequest;
 import com.devteria.identity_service.dto.response.AuthenticationResponse;
 import com.devteria.identity_service.dto.response.IntrospectResponse;
+import com.devteria.identity_service.entity.InvalidatedToken;
 import com.devteria.identity_service.entity.Role;
 import com.devteria.identity_service.entity.User;
 import com.devteria.identity_service.exception.AppException;
 import com.devteria.identity_service.exception.ErrorCode;
+import com.devteria.identity_service.repository.InvalidatedTokenRepository;
 import com.devteria.identity_service.repository.UserRepository;
 import com.nimbusds.jose.JOSEException;
 import com.nimbusds.jose.JWSAlgorithm;
@@ -30,6 +33,7 @@ import org.springframework.util.CollectionUtils;
 import java.text.ParseException;
 import java.util.Date;
 import java.util.StringJoiner;
+import java.util.UUID;
 
 @Slf4j
 @Service
@@ -42,6 +46,9 @@ public class AuthenticationService {
 
     @Autowired
     private PasswordEncoder passwordEncoder;
+
+    @Autowired
+    private InvalidatedTokenRepository invalidatedTokenRepository;
 
     /**
      * Xác thực token thông qua introspect.
@@ -61,6 +68,9 @@ public class AuthenticationService {
 
         // Xác thực token và kiểm tra thời hạn
         boolean isValid = signedJWT.verify(verifier) && expiredTime.after(new Date());
+        if(isValid) {
+            isValid = !invalidatedTokenRepository.existsById(signedJWT.getJWTClaimsSet().getJWTID());
+        }
         return IntrospectResponse.builder()
                 .valid(isValid)
                 .build();
@@ -88,6 +98,24 @@ public class AuthenticationService {
         return AuthenticationResponse.builder().token(token).authenticated(authenticated).build();
     }
 
+    public void logout(LogoutRequest request) throws ParseException, JOSEException {
+        IntrospectResponse introspectResponse = introspect(IntrospectRequest.builder().token(request.getToken()).build());
+        if(!introspectResponse.getValid()) {
+            return;
+        }
+        SignedJWT signedJWT = getSignedJWT(request.getToken());
+        String jit = signedJWT.getJWTClaimsSet().getJWTID();
+        Date expiredTime = signedJWT.getJWTClaimsSet().getExpirationTime();
+
+        InvalidatedToken invalidatedToken = new InvalidatedToken(jit, expiredTime);
+        invalidatedTokenRepository.save(invalidatedToken);
+    }
+
+    private SignedJWT getSignedJWT(String token) throws JOSEException, ParseException {
+        JWSVerifier verifier = new MACVerifier(SIGNER_KEY.getBytes());
+        return SignedJWT.parse(token);
+    }
+
     /**
      * Tạo JWT token cho người dùng.
      *
@@ -104,6 +132,7 @@ public class AuthenticationService {
                 .issuer("devteria.com") // Định danh nhà phát hành token
                 .issueTime(new Date()) // Thời gian phát hành
                 .expirationTime(new Date(new Date().getTime() + 1000 * 60 * 60 * 24)) // Thời gian hết hạn: 1 ngày
+                .jwtID(UUID.randomUUID().toString())
                 .claim("scope", buildScope(user)) // Thêm các quyền của người dùng
                 .claim("userId", user.getId()) // Thêm Id của user
                 .build();
