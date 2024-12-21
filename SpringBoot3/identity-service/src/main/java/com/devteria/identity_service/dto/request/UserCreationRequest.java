@@ -3,6 +3,7 @@ package com.devteria.identity_service.dto.request;
 import java.time.LocalDate;
 import java.util.List;
 
+import com.devteria.identity_service.validator.DobConstraint;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
@@ -31,7 +32,8 @@ public class UserCreationRequest {
 	private String firstName;
 	
 	private String lastName;
-	
+
+	@DobConstraint(min = 2)
 	private LocalDate dob;
 
 	private List<String> roles;
