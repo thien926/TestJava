@@ -36,6 +36,7 @@ public class SecurityConfig {
             "/auth/login",
             "/auth/introspect",
             "/auth/logout",
+            "/auth/refresh",
     };
 
     // Các endpoint yêu cầu quyền ROLE_ADMIN để truy cập với phương thức GET
