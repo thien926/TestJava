@@ -3,6 +3,7 @@ package com.devteria.identity_service.service;
 import com.devteria.identity_service.dto.request.AuthenticationRequest;
 import com.devteria.identity_service.dto.request.IntrospectRequest;
 import com.devteria.identity_service.dto.request.LogoutRequest;
+import com.devteria.identity_service.dto.request.RefreshRequest;
 import com.devteria.identity_service.dto.response.AuthenticationResponse;
 import com.devteria.identity_service.dto.response.IntrospectResponse;
 import com.devteria.identity_service.entity.InvalidatedToken;
@@ -96,6 +97,34 @@ public class AuthenticationService {
         // Tạo token JWT
         String token = generateToken(user);
         return AuthenticationResponse.builder().token(token).authenticated(authenticated).build();
+    }
+
+    public AuthenticationResponse refreshToken(RefreshRequest request) throws JOSEException, ParseException {
+        // Tạo verifier từ khóa ký
+        JWSVerifier verifier = new MACVerifier(SIGNER_KEY.getBytes());
+
+        // Phân tích token
+        SignedJWT signedJWT = SignedJWT.parse(request.getToken());
+        Date expiredTime = signedJWT.getJWTClaimsSet().getExpirationTime();
+        String jit = signedJWT.getJWTClaimsSet().getJWTID();
+
+        boolean isValid = signedJWT.verify(verifier) && expiredTime.after(new Date());
+        if(isValid) {
+            isValid = !invalidatedTokenRepository.existsById(signedJWT.getJWTClaimsSet().getJWTID());
+        }
+        if(!isValid) {
+            throw new AppException(ErrorCode.UNAUTHENTICATED);
+        }
+
+        InvalidatedToken invalidatedToken = InvalidatedToken.builder()
+                .id(jit)
+                .expiryTime(expiredTime)
+                .build();
+        invalidatedTokenRepository.save(invalidatedToken);
+        String username = signedJWT.getJWTClaimsSet().getSubject();
+        User user = userRepository.findByUsername(username).orElseThrow(() -> new RuntimeException("User not found"));
+        String token = generateToken(user);
+        return AuthenticationResponse.builder().token(token).authenticated(true).build();
     }
 
     public void logout(LogoutRequest request) throws ParseException, JOSEException {
